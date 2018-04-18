@@ -5,6 +5,7 @@ import Vapor
 ///
 /// [Learn More →](https://docs.vapor.codes/3.0/getting-started/structure/#routesswift)
 public func routes(_ router: Router) throws {
+    
     // Basic "Hello, world!" example
     router.get("hello") { req in
         return "Hello, world!  It's me, Laskin."
@@ -12,5 +13,10 @@ public func routes(_ router: Router) throws {
 
     let usersController = UsersController()
     try router.register(collection: usersController)
-
+    
+    let userDetailsController = UserDetailsController()
+    try router.register(collection: userDetailsController)
+    
+    let matchMakingDataController = MatchMakingDataController()
+    try router.register(collection: matchMakingDataController)
 }

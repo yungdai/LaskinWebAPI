@@ -14,6 +14,8 @@ struct UsersController: RouteCollection {
         userRoutes.get("search", use: searchHandler)
         userRoutes.get("first", use: getFirstHandler)
         userRoutes.get("sort", use: sortHandler)
+        userRoutes.get(User.parameter, "userDetails", use: getUserDetailsHandler)
+        userRoutes.get(User.parameter, "matchMakingData", use: getMatchMakingDataHandler)
     }
     
     // CREATE
@@ -98,12 +100,21 @@ struct UsersController: RouteCollection {
         return try User.query(on: request).sort(\.lastName, .ascending).all()
     }
  
-//    // GET Acronym from User
-//    func getAcronymsHandler(_ request: Request) throws -> Future<[Acronym]> {
-//        //  Feth the user specified in the request's paramaters and unwarp the returned future.
-//        return try request.parameter(User.self)
-//            .flatMap(to: [Acronym].self) { user in
-//                try user.acronyms.query(on: request).all()
-//        }
-//    }
+    // GET UserDetails for User
+    func getUserDetailsHandler(_ request: Request) throws -> Future<[UserDetails]> {
+        //  Feth the user specified in the request's paramaters and unwarp the returned future.
+        return try request.parameter(User.self)
+            .flatMap(to: [UserDetails].self) { user in
+                try user.userDetails.query(on: request).all()
+        }
+    }
+    
+    // GET Match Making Data for User
+    func getMatchMakingDataHandler(_ request: Request) throws -> Future<[MatchMakingData]> {
+        //  Feth the user specified in the request's paramaters and unwarp the returned future.
+        return try request.parameter(User.self)
+            .flatMap(to: [MatchMakingData].self) { user in
+                try user.matchMakingData.query(on: request).all()
+        }
+    }
 }

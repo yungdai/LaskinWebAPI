@@ -42,6 +42,16 @@ public func configure(
     /// Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: User.self, database: .psql)
+    migrations.add(model: UserDetails.self, database: .psql)
+    migrations.add(model: MatchMakingData.self, database: .psql)
     services.register(migrations)
+    
+    // Configure the rest of your application here:
+    // create a CommandConfig with the default configuration
+    var commandConfig = CommandConfig.default()
+    // Add the revert command with the identifier revert.  This is the string you use to to invoke the command
+    commandConfig.use(RevertCommand.self, as: "revert")
+    // register the commandConfig as a service
+    services.register(commandConfig)
 
 }

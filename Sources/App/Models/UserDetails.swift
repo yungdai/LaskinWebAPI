@@ -24,7 +24,7 @@ final class UserDetails: Codable {
     // conflicting schools for judge
     var conflictingSchools: [String]
     
-    init(userID: User.ID, emailAddress: String = "none", mobilePhone: String = "none", officePhone: String = "none", requiresAccessibility: Bool = false, accessibilityNeeds: String = "non", hasDietaryNeeds: Bool = false, dietaryNeeds: String = "none", conflictingSchools: [String] = []) {
+    init(userID: User.ID, emailAddress: String = "none", mobilePhone: String = "none", officePhone: String = "none", requiresAccessibility: Bool = false, accessibilityNeeds: String = "none", hasDietaryNeeds: Bool = false, dietaryNeeds: String = "none", conflictingSchools: [String] = []) {
         
         self.userID = userID
         self.emailAddress = emailAddress
@@ -41,7 +41,7 @@ final class UserDetails: Codable {
 extension UserDetails: PostgreSQLModel {}
 extension UserDetails: Content {}
 extension UserDetails: Parameter {}
-extension UserDetails: Migration {}
+
 extension UserDetails {
     
     // add a computered property to acronym to get the user object of the User's owner.  This returns fluent's generic Parent Type
@@ -52,4 +52,21 @@ extension UserDetails {
 }
 
 
+extension UserDetails: Migration{
+    
+    // add a function for foreign key constraints
+    // impliment prepare(on
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        
+        // create table for UserDetails in the database
+        return Database.create(self, on: connection) { builder in
+            
+            // add all the fields to the database for UserDetails.
+            try addProperties(to: builder)
+            
+            // add reference between the userID propery on UserDetails and the id properly on the User
+            try builder.addReference(from: \.userID, to: \User.id)
+        }
+    }
+}
 

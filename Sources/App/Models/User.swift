@@ -32,4 +32,12 @@ extension User {
         let fullName = firstName + lastName
         return fullName
     }
+    
+    var userDetails: Children<User, UserDetails> {
+        return children(\.userID)
+    }
+    
+    var matchMakingData: Children<User, MatchMakingData> {
+        return children(\.userID)
+    }
 }
