@@ -1,4 +1,4 @@
-import FluentSQLite
+import FluentPostgreSQL
 import Vapor
 
 /// Called before your application initializes.
@@ -10,7 +10,7 @@ public func configure(
     _ services: inout Services
 ) throws {
     /// Register providers first
-    try services.register(FluentSQLiteProvider())
+    try services.register(FluentPostgreSQLProvider())
 
     /// Register routes to the router
     let router = EngineRouter.default()
@@ -24,24 +24,42 @@ public func configure(
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
 
-    // Configure a SQLite database
-    let sqlite: SQLiteDatabase
-    if env.isRelease {
-        /// Create file-based SQLite db using $SQLITE_PATH from process env
-        sqlite = try SQLiteDatabase(storage: .file(path: Environment.get("SQLITE_PATH")!))
-    } else {
-        /// Create an in-memory SQLite database
-        sqlite = try SQLiteDatabase(storage: .memory)
-    }
-
-    /// Register the configured SQLite database to the database config.
+    // Docker command used to create the test database
+    // docker run --name laskindb -e POSTGRES_DB=vapor -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=laskinAdmin -p 5432:5432 -d postgres
+    
+    /// Configure PostgreSQL Database
     var databases = DatabaseConfig()
-    databases.add(database: sqlite, as: .sqlite)
+    
+    // fetch environement variables set by Vapor Cloud.  If it's nil return the coalescing values
+    let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
+    let username = Environment.get("DATABASE_USER") ?? "admin"
+    let databaseName = Environment.get("DATABASE_DB") ?? "vapor"
+    let password = Environment.get("DATABASE_PASSWORD") ?? "laskinAdmin"
+
+    // user properties to create the config
+    let databaseConfig = PostgreSQLDatabaseConfig(hostname: hostname,
+                                                  port: 5432,
+                                                  username: username,
+                                                  database: databaseName,
+                                                  password: password)
+    
+    let database = PostgreSQLDatabase(config: databaseConfig)
+    databases.add(database: database, as: .psql)
     services.register(databases)
 
     /// Configure migrations
     var migrations = MigrationConfig()
-    migrations.add(model: Todo.self, database: .sqlite)
+    migrations.add(model: User.self, database: .psql)
+    migrations.add(model: UserDetails.self, database: .psql)
+    migrations.add(model: MatchMakingData.self, database: .psql)
     services.register(migrations)
+    
+    // Configure the rest of your application here:
+    // create a CommandConfig with the default configuration
+    var commandConfig = CommandConfig.default()
+    // Add the revert command with the identifier revert.  This is the string you use to to invoke the command
+    commandConfig.use(RevertCommand.self, as: "revert")
+    // register the commandConfig as a service
+    services.register(commandConfig)
 
 }
