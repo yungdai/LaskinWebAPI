@@ -7,8 +7,10 @@ import Vapor
 public func routes(_ router: Router) throws {
     // Basic "Hello, world!" example
     router.get("hello") { req in
-        return "Hello, world!"
+        return "Hello, world!  It's me, Laskin."
     }
 
+    let usersController = UsersController()
+    try router.register(collection: usersController)
 
 }
