@@ -29,11 +29,19 @@ public func configure(
     
     /// Configure PostgreSQL Database
     var databases = DatabaseConfig()
-    let databaseConfig = PostgreSQLDatabaseConfig(hostname: "localhost",
+    
+    // fetch environement variables set by Vapor Cloud.  If it's nil return the coalescing values
+    let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
+    let username = Environment.get("DATABASE_USER") ?? "admin"
+    let databaseName = Environment.get("DATABASE_DB") ?? "vapor"
+    let password = Environment.get("DATABASE_PASSWORD") ?? "laskinAdmin"
+
+    // user properties to create the config
+    let databaseConfig = PostgreSQLDatabaseConfig(hostname: hostname,
                                                   port: 5432,
-                                                  username: "admin",
-                                                  database: "vapor",
-                                                  password: "laskinAdmin")
+                                                  username: username,
+                                                  database: databaseName,
+                                                  password: password)
     
     let database = PostgreSQLDatabase(config: databaseConfig)
     databases.add(database: database, as: .psql)
