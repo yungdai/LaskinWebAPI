@@ -7,7 +7,7 @@
       <table style="width:90%" align="center" class="table table-bordered table-hover">
         <thread class="thread-light">
           <col width="25%">
-          <tr bgcolor="#ddd">
+          <tr bgcolor="#aaa">
 
             <th>Full Name</th>
             <td>#(fullName)</td>
@@ -16,7 +16,7 @@
             <th>First Name</th>
             <td>#(user.firstName)</td>
           </tr>
-          <tr bgcolor="#ddd">
+          <tr bgcolor="#aaa">
             <th>Last Name</th>
             <td>#(user.lastName)</td>
           </tr>
@@ -24,7 +24,7 @@
             <th bgcolor="#eee">User Type</th>
             <td>#(user.userType)</td>
           </tr>
-          <tr bgcolor="#ddd">
+          <tr bgcolor="#aaa">
             <th>Application Priviledges</th>
             <td>#(user.priviledges)</td>
           </tr>
