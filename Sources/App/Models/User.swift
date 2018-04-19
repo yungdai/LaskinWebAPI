@@ -26,13 +26,6 @@ extension User: Parameter {}
 
 extension User {
     
-    // set up a fullname
-    var fullName: String {
-        
-        let fullName = firstName + lastName
-        return fullName
-    }
-    
     var userDetails: Children<User, UserDetails> {
         return children(\.userID)
     }
