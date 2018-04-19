@@ -27,7 +27,7 @@ struct WebsiteController: RouteCollection {
 
         return try request.parameter(User.self).flatMap(to: View.self) { user in
             
-            let context = UserContext(title: "User Information", user: user)
+            let context = UserContext(title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)")
             return try request.leaf().render("user", context)
         }
     }
@@ -51,5 +51,6 @@ struct UserContext: Codable {
     
     let title: String
     let user: User
+    let fullName: String
 }
 

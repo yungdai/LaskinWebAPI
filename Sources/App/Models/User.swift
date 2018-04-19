@@ -9,7 +9,6 @@ final class User: Codable {
     var lastName: String
     var userType: String
     var priviledges: String
-    var fullName: String
     
     init(firstName: String = "", lastName: String = "", userType: String = "none", priviledges: String = "none") {
         
@@ -17,9 +16,7 @@ final class User: Codable {
         self.lastName = lastName
         self.userType = userType
         self.priviledges = priviledges
-        self.fullName = "\(firstName) \(lastName)"
     }
-    
 }
 
 extension User: PostgreSQLUUIDModel {}
@@ -28,8 +25,6 @@ extension User: Migration {}
 extension User: Parameter {}
 
 extension User {
-    
-    
     
     var userDetails: Children<User, UserDetails> {
         return children(\.userID)

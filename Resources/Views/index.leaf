@@ -4,7 +4,7 @@
   #if(users) {
     <table style="width:90%" align="center" class="table table-bordered table-hover">
       <thread class="thread-light">
-        <tr>
+        <tr bgcolor="#aaa">
           <th>
             First Name
           </th>

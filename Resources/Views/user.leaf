@@ -1,28 +1,30 @@
 #set("content") {
-    <body>
-    <h1>User: #(user.fullName)</h1>
-    <h2>User Type: #(user.userType)</h2>
+  <body>
+    <h1 align="center">#(fullName)</h1>
+    <h3 align="center">#(user.userType)</h3>
 
     #if(user) {
-      <table style="with:90%" align="left">
-        <thread>
-          <tr>
+      <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <thread class="thread-light">
+          <col width="25%">
+          <tr bgcolor="#ddd">
+
             <th>Full Name</th>
-            <td>#(user.fullName)</td>
+            <td>#(fullName)</td>
           </tr>
-          <tr>
+          <tr bgcolor="#eee">
             <th>First Name</th>
             <td>#(user.firstName)</td>
           </tr>
-          <tr>
+          <tr bgcolor="#ddd">
             <th>Last Name</th>
             <td>#(user.lastName)</td>
           </tr>
-          <tr>
-            <th>User Type</th>
+          <tr bgcolor="#eee">
+            <th bgcolor="#eee">User Type</th>
             <td>#(user.userType)</td>
           </tr>
-          <tr>
+          <tr bgcolor="#ddd">
             <th>Application Priviledges</th>
             <td>#(user.priviledges)</td>
           </tr>
@@ -33,8 +35,8 @@
     }
 
     <!-- <p>
-        Create by #(creator.name)
-    </p> -->
+    Create by #(creator.name)
+  </p> -->
 
 }
 
