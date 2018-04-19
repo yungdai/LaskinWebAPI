@@ -1,0 +1,34 @@
+#set("content") {
+  <h1>Laskin Users</h1>
+
+  #if(users) {
+    <table style="width:90%" align="center" class="table table-bordered table-hover">
+      <thread class="thread-light">
+        <tr>
+          <th>
+            First Name
+          </th>
+          <th>
+            Last name
+          </th>
+          <th>
+            User Type
+          </th>
+          <th>
+            App Priviledges
+          </th>
+        </tr>
+      </thread>
+      <tbody>
+        #for(user in users) {
+          <tr><td><a href="/users/#(user.id)">#(user.firstName)<a></td><td>#(user.lastName)</td><td>#(user.userType)</td><td>#(user.priviledges)</td></tr>
+          }
+        </tbody>
+      </table>
+    } else {
+      <h2>There are no users to display!</h2>
+    }
+}
+
+
+#embed("base")

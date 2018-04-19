@@ -19,4 +19,7 @@ public func routes(_ router: Router) throws {
     
     let matchMakingDataController = MatchMakingDataController()
     try router.register(collection: matchMakingDataController)
+    
+    let websiteController = WebsiteController()
+    try router.register(collection: websiteController)
 }

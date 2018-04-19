@@ -1,0 +1,41 @@
+#set("content") {
+    <body>
+    <h1>User: #(user.fullName)</h1>
+    <h2>User Type: #(user.userType)</h2>
+
+    #if(user) {
+      <table style="with:90%" align="left">
+        <thread>
+          <tr>
+            <th>Full Name</th>
+            <td>#(user.fullName)</td>
+          </tr>
+          <tr>
+            <th>First Name</th>
+            <td>#(user.firstName)</td>
+          </tr>
+          <tr>
+            <th>Last Name</th>
+            <td>#(user.lastName)</td>
+          </tr>
+          <tr>
+            <th>User Type</th>
+            <td>#(user.userType)</td>
+          </tr>
+          <tr>
+            <th>Application Priviledges</th>
+            <td>#(user.priviledges)</td>
+          </tr>
+        </thread>
+      </table>
+    } else {
+      <h2>Uh Oh!  No user found!</h2>
+    }
+
+    <!-- <p>
+        Create by #(creator.name)
+    </p> -->
+
+}
+
+#embed("base")
