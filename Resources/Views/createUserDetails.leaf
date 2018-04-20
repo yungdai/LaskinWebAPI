@@ -1,0 +1,86 @@
+#set("content") {
+  <h1>#if(editing){Update} else {Submit} User Data</h1>
+
+  <form method="post">
+    <div class="form-group">
+      <lable for=emailAddress>Email Address</label>
+        <input type="text" name="emailAddress" class="form-control" id="emailAddress" #if(editing){value="#(userDetails.emailAddress)"}/>
+      </div>
+
+      <div class="form-group">
+        <label for=mobilePhone>Mobile Phone</label>
+        <input type="text" name="mobilePhone" class="form-control" id="mobilePhone" #if(editing){value="#(userDetails.mobilePhone)"}/>
+      </div>
+
+      <lable for=officePhone>Office Phone</label>
+        <input type="text" name="officePhone" class="form-control" id="officePhone" #if(editing){value="#(userDetails.officePhone)"}/>
+      </div>
+
+      <!-- <div class="form-group">
+        <label for=userRequiresAccessibility>Requires Accessibility?</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="userRequiresAccessibility" id="accessibilityTrue" value="true" #if(editing){
+            #if(userDetails.requiresAccessibility == true)
+            checked
+          }>
+          <label class="form-check-label">
+            Yes
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="userRequiresAccessibility" id="accessibilityFalse" value="false" #if(editing){
+            #if(userDetails.requiresAccessibility == true)
+            checked
+          }>
+          <label class="form-check-label">
+            No
+          </label>
+
+        </div>
+      </div> -->
+
+
+        <!-- <label for=userRequiresAccessibility>Requires Accessibility</label>
+        <input type="radio" name="userRequiresAccessibility" class="form-control" id="userRequiresAccessibility">Yes
+        <input type="radio" name="userRequiresAccessibility" class="form-control" id="userRequiresAccessibility">No #if(editing){value="#(userDetails.requiresAccessibility)"}/>
+      </div> -->
+      <div>
+      <lable for=requiresAccessibility>Requires Accessibility?</label>
+        <input type="text" name="requiresAccessibility" class="form-control" id="requiresAccessibility" #if(editing){value="#(userDetails.requiresAccessibility)"}/>
+      </div>
+
+      <div class="form-group">
+        <label for=accessibilityNeeds>Accessibility Needs</label>
+        <input type="text" name="accessibilityNeeds" class="form-control" id="accessibilityNeeds" #if(editing){value="#(userDetails.accessibilityNeeds)"} onclick=/>
+      </div>
+
+      <lable for=hasDietaryNeeds>Has Dietary Needs?</label>
+        <input type="text" name="hasDietaryNeeds" class="form-control" id="hasDietaryNeeds" #if(editing){value="#(userDetails.hasDietaryNeeds)"}/>
+      </div>
+
+      <div class="form-group">
+        <label for=dietaryNeeds>Dietary Needs</label>
+        <input type="text" name="dietaryNeeds" class="form-control" id="dietaryNeeds" #if(editing){value="#(userDetails.dietaryNeeds)"}/>
+      </div>
+
+      <div class="form-group">
+        <label for=conflictingSchools>Dietary Needs</label>
+        <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(editing){value="#(userDetails.conflictingSchools)"}/>
+      </div>
+
+      <div class="form-group">
+        <label for="creator">Creator</label>
+        <select name="creator" class="form-control" id="creator">
+          #for(user in users) {
+            <option value="#(user.id)" #if(editing){#if(acronym.creatorID == user.id){selected}}>
+              #(user.name)
+            </option>
+          }
+        </select>
+      </div>
+      <!-- this is how you write code that will choose one type of text or another based on if/else  -->
+      <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>
+    </form>
+  }
+
+  #embed("base")
