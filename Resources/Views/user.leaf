@@ -34,6 +34,55 @@
       <h2>Uh Oh!  No user found!</h2>
     }
 
+    #if(userDetails) {
+      <h3>User Details</h3>
+      <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <thread class="thread-light">
+          <col width="25%">
+          <tr bgcolor="#aaa">
+            <th>Email Address</th>
+            <td>#(userDetails.emailAddress)</td>
+          </tr>
+          <tr bgcolor="#eee">
+            <th>Mobile Phone</th>
+            <td>#(userDetails.mobilePhone)</td>
+          </tr>
+          <tr bgcolor="#aaa">
+            <th>Office Phone</th>
+            <td>#(userDetails.officePhone)</td>
+          </tr>
+          <tr bgcolor="#eee">
+            <th bgcolor="#eee">Requires Accessibility</th>
+            <td>#if(userDetails.requiresAccessibility){Yes} else {No}</td>
+          </tr>
+          #if(userDetails.requiresAccessibility) {
+            <tr bgcolor="#aaa">
+              <th>Accessibility Needs</th>
+              <td>#(userDetails.accessibilityNeeds)</td>
+            </tr>
+          }
+            <tr #if(userDetails.requiresAccessibility){bgcolor="#eee"} else { bgcolor="#aaa"}>
+            <th>Has Dietary Needs</th>
+            <td>#if(userDetails.hasDietaryNeeds){Yes} else {No}</td>
+          </tr>
+
+          #if(userDetails.hasDietaryNeeds) {
+            <tr #if(userDetails.requiresAccessibility){bgcolor="#aaa"} else { bgcolor="#eee"}>
+              <th>Last Name</th>
+              <td>#(user.lastName)</td>
+            </tr>
+          }
+
+          <tr #if(userDetails.requiresAccessibility){bgcolor="#eee"} else { bgcolor="#aaa"}>
+            <th bgcolor="#eee">Conflicting School</th>
+            <td>#(user.conflictingSchools)</td>
+          </tr>
+        </thread>
+      </table>
+    } else {
+      <a href="/users/#(user.id)/userDetails/create" class="button">Add User Details</a>
+    }
+
     <!-- <p>
     Create by #(creator.name)
   </p> -->

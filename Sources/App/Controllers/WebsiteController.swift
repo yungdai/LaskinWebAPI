@@ -38,7 +38,11 @@ struct WebsiteController: RouteCollection {
 
         return try request.parameter(User.self).flatMap(to: View.self) { user in
             
-            let context = UserContext(title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)")
+//            (title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)")
+//        
+//            let userDetails = user.userDetails.query(on: request).first()
+            
+            let context = UserContext(title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)", userDetails: <#T##UserDetails?#>, matchMakingData: <#T##MatchMakingData?#>)
             return try request.leaf().render("user", context)
         }
     }
@@ -55,35 +59,15 @@ struct WebsiteController: RouteCollection {
     }
     
     //  router.post("users", User.parameter, "userDetails", "create", use: createUserDetailsPostHandler)
-    
-    
-//    func createAcronymPostHandler(_ request: Request) throws -> Future<Response> {
-//        return try request.content.decode(AcronynPostData.self).flatMap(to: Response.self) { data in
-//
-//            // create the acronym
-//            let acronym = Acronym(short: data.acronymShort, long: data.acronymLong, creatorID: data.creator)
-//            return acronym.save(on: request).map(to: Response.self) { acronym in
-//                guard let id = acronym.id else {
-//
-//                    // if there is something wrong with the ID go to the homepage for now
-//                    return request.redirect(to: "/")
-//                }
-//
-//                // everything is okay so go to the page of the acronym just created
-//                return request.redirect(to: "/acronyms/\(id)")
-//            }
-//        }
-//    }
-    
+
     // CREATE UserDetails POST handler
     func createUserDetailsPostHandler(_ request: Request) throws -> Future<Response> {
         
-        return try request.content.decode(UserDetailsPostData.self).flatMap(to: Response.self) { data  in
-
+        return try flatMap(to: Response.self, request.parameter(User.self), request.content.decode(UserDetailsPostData.self)) { user, data in
             
             let conflictingSchools = data.conflictingSchools.components(separatedBy: ",")
-            // create the UserDetails
             
+            // create the UserDetails
             let userDetails = UserDetails(userID: data.creator,
                                           emailAddress: data.emailAddress,
                                           mobilePhone: data.mobilePhone,
@@ -166,6 +150,11 @@ struct UserContext: Codable {
     let title: String
     let user: User
     let fullName: String
+    
+    let userDetails: UserDetails?
+    let matchMakingData: MatchMakingData?
+    
+
 }
 
 
