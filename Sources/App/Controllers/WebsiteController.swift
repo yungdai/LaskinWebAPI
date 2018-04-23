@@ -95,7 +95,7 @@ struct WebsiteController: RouteCollection {
     func editUserDetailsHandler(_ request: Request) throws -> Future<View> {
         return try flatMap(to: View.self, request.parameters.next(User.self), request.parameters.next(UserDetails.self)) { user, userDetails in
     
-            let context = EditUserDetailsContext(title: "Edit User Details", userDetails:userDetails, user: user)
+            let context = EditUserDetailsContext(title: "Edit User Details", userDetails:userDetails, user: user, fullName: user.getFullName())
             return try request.leaf().render("createUserDetails", context)
         }
     }
@@ -185,6 +185,7 @@ struct EditUserDetailsContext: Codable {
     let title: String
     let userDetails: UserDetails
     let user: User
+    let fullName: String
     
     // set editing to true so you can tell the document you're in edit mode
     let editing = true
