@@ -35,15 +35,14 @@ struct WebsiteController: RouteCollection {
     
     // return the user page
     func userHandler(_ request: Request) throws -> Future<View> {
-
+        
         return try request.parameter(User.self).flatMap(to: View.self) { user in
             
-//            (title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)")
-//        
-//            let userDetails = user.userDetails.query(on: request).first()
-            
-            let context = UserContext(title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)", userDetails: <#T##UserDetails?#>, matchMakingData: <#T##MatchMakingData?#>)
-            return try request.leaf().render("user", context)
+            return try flatMap(to: View.self, user.userDetails.query(on: request).first(), user.matchMakingData.query(on: request).first()) { userDetails, matchMakingData in
+                
+                let context = UserContext(title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)", userDetails: userDetails, matchMakingData: matchMakingData)
+                return try request.leaf().render("user", context)
+            }
         }
     }
     
