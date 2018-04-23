@@ -21,81 +21,85 @@
           <label for=userRequiresAccessibility>Requires Accessibility?</label>
 
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="requiresAccessibility" id="accessibilityYes" value="true" #if(editing){ #if(userDetails.requiresAccessibility == true) { checked="checked" }} onclick="toggleAccessibilty()">
-                <label class="form-check-label">Yes</label>
-              </div>
+            <input class="form-check-input" type="radio" name="requiresAccessibility" id="requiresAccessibility" value="true" #if(editing){ #if(userDetails.requiresAccessibility == true) { checked="checked" }} onclick="toggleAccessibilty()">
+            <label class="form-check-label">Yes</label>
+          </div>
 
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="requiresAccessibility" id="accessibilityNo" value="false" #if(editing){
-                  #if(userDetails.requiresAccessibility == false) { checked="checked" }} onclick="toggleAccessibilty()"/>
-                    <label class="form-check-label">No</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="requiresAccessibility" id="accessibilityNo" value="false" #if(editing){
+              #if(userDetails.requiresAccessibility == false) { checked="checked" }} onclick="toggleAccessibilty()"/>
+              <label class="form-check-label">No</label>
+            </div>
+          </div>
+
+
+
+          <div class="form-group">
+            <label for=accessibilityNeeds id="accessibilityNeedsLabel">Accessibility Needs</label>
+            <input type="text" name="accessibilityNeeds" class="form-control" id="accessibilityNeeds" #if(editing){value="#(userDetails.accessibilityNeeds)"}/>
+          </div>
+
+          <div class="form-group">
+            <label for=userRequiresAccessibility>Has Dietary Needs?</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="hasDietaryNeeds" value="true" #if(editing){
+                #if(userDetails.hasDietaryNeeds == true) {
+                  checked }} onclick="toggleDietaryNeeds()">
+                  <label class="form-check-label">Yes</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="dietaryNeedsNo" value="false" #if(editing){
+                    #if(userDetails.hasDietaryNeeds == false) {
+                      checked="checked" } } onclick="toggleDietaryNeeds()">
+                      <label class="form-check-label">No</label>
+                    </div>
                   </div>
-                </div>
 
+                  <div class="form-group">
+                    <label for=dietaryNeeds>Dietary Needs</label>
+                    <input type="text" name="dietaryNeeds" class="form-control" id="dietaryNeeds" #if(editing){value="#(userDetails.dietaryNeeds)"}/>
+                  </div>
 
+                  <div class="form-group">
+                    <label for=conflictingSchools>Conflicting Schools (Separate Schools with a comma)</label>
+                    <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(editing){value="#for(school in userDetails.conflictingSchools) { #if(loop.isLast){#(school)} else {#(school),}  }"}/>
+                  </div>
 
-                <div class="form-group">
-                  <label for=accessibilityNeeds id="accessibilityNeedsLabel">Accessibility Needs</label>
-                  <input type="text" name="accessibilityNeeds" class="form-control" id="accessibilityNeeds" #if(editing){value="#(userDetails.accessibilityNeeds)"}/>
-                </div>
+                  <div class="form-group">
+                    <label for="creator">User Data Assigned to: #(fullName)</label>
+                  </div>
 
-                <div class="form-group">
-                  <label for=userRequiresAccessibility>Has Dietary Needs?</label>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="dietaryNeedsYes" value="true" #if(editing){
-                      #if(userDetails.hasDietaryNeeds == true) {
-                        checked }} onclick="toggleDietaryNeeds()">
-                        <label class="form-check-label">Yes</label>
-                      </div>
+                  <!-- this is how you write code that will choose one type of text or another based on if/else  -->
+                  <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>
+                </form>
+              }
 
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="dietaryNeedsNo" value="false" #if(editing){
-                          #if(userDetails.hasDietaryNeeds == false) {
-                            checked="checked" } } onclick="toggleDietaryNeeds()">
-                            <label class="form-check-label">No</label>
-                          </div>
-                        </div>
+              <script type="text/javascript">
+              function toggleAccessibilty() {
+                if (document.getElementById("requiresAccessibility").checked) {
+                  document.getElementById("requiresAccessibility").value = true;
+                  document.getElementById("accessibilityNeeds").value = "";
+                  document.getElementById("accessibilityNeeds").disabled = false;
+                  document.getElementById("accessibilityNeeds").placeholder="Enter in the special needs required"
+                } else {
+                  document.getElementById("requiresAccessibility").value = false
+                  document.getElementById("accessibilityNeeds").value = "N/A";
+                  document.getElementById("accessibilityNeeds").disabled = true;
+                }
+              }
 
-                        <div class="form-group">
-                          <label for=dietaryNeeds>Dietary Needs</label>
-                          <input type="text" name="dietaryNeeds" class="form-control" id="dietaryNeeds" #if(editing){value="#(userDetails.dietaryNeeds)"}/>
-                        </div>
+              function toggleDietaryNeeds() {
+                if (document.getElementById("hasDietaryNeeds").checked) {
+                  document.getElementById("hasDietaryNeeds").value = true;
+                  document.getElementById("dietaryNeeds").value = "";
+                  document.getElementById("dietaryNeeds").disabled = false;
+                } else {
+                  document.getElementById("hasDietaryNeeds").value = false;
+                  document.getElementById("dietaryNeeds").value = "N/A";
+                  document.getElementById("dietaryNeeds").disabled = true;
+                }
+              }
+              </script>
 
-                        <div class="form-group">
-                          <label for=conflictingSchools>Conflicting Schools (Separate Schools with a comma)</label>
-                          <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(editing){value="#(userDetails.conflictingSchools)"}/>
-                        </div>
-
-                        <div class="form-group">
-                          <label for="creator">User Data Assigned to: #(fullName)</label>
-                        </div>
-
-                      <!-- this is how you write code that will choose one type of text or another based on if/else  -->
-                      <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>
-                      </form>
-                    }
-
-                    <script type="text/javascript">
-
-                    function toggleAccessibilty() {
-                      if (document.getElementById("accessibilityYes").checked) {
-                        document.getElementById("accessibilityNeeds").value = "";
-                        document.getElementById("accessibilityNeeds").disabled = false;
-                      } else {
-                        document.getElementById("accessibilityNeeds").value = "N/A";
-                        document.getElementById("accessibilityNeeds").disabled = true;
-                      }
-                    }
-
-                    function toggleDietaryNeeds() {
-                      if (document.getElementById("dietaryNeedsYes").checked) {
-                        document.getElementById("dietaryNeeds").value = "";
-                        document.getElementById("dietaryNeeds").disabled = false;
-                      } else {
-                        document.getElementById("dietaryNeeds").value = "N/A";
-                        document.getElementById("dietaryNeeds").disabled = true;
-                      }
-                    }
-                    </script>
-
-                    #embed("base")
+              #embed("base")

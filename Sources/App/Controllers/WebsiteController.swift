@@ -79,14 +79,14 @@ struct WebsiteController: RouteCollection {
             
             return userDetails.save(on: request).map(to: Response.self) { userDetails in
                 
-                guard let id = userDetails.id else {
+                guard let _ = userDetails.id else {
                     
                     // send the user back to the home page if the userID is wrong
                     return request.redirect(to: "/")
                 }
                 
                 // everything is find so go to the page you just created
-                return request.redirect(to: "/users/\(id)")
+                return request.redirect(to: "/users/\(userDetails.userID)")
             }
         }
     }
@@ -120,11 +120,11 @@ struct WebsiteController: RouteCollection {
             userDetails.userID = user.id!
             
             return userDetails.save(on: request).map(to: Response.self) { userDetails in
-                guard let id = userDetails.id else {
+                guard let _ = userDetails.id else {
                     return request.redirect(to: "/")
                 }
                 
-                return request.redirect(to: "/users/\(id)")
+                return request.redirect(to: "/users/\(userDetails.userID)")
             }
         }
     }
