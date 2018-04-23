@@ -63,7 +63,7 @@
 
                   <div class="form-group">
                     <label for=conflictingSchools>Conflicting Schools (Separate Schools with a comma)</label>
-                    <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(editing){value="#for(school in userDetails.conflictingSchools) { #if(loop.isLast){#(school)} else {#(school),}  }"}/>
+                    <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(editing){value="#for(school in userDetails.conflictingSchools) { #if(isLast){#(school)} else {#(school),}}"}/>
                   </div>
 
                   <div class="form-group">
