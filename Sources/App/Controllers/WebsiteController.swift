@@ -36,11 +36,11 @@ struct WebsiteController: RouteCollection {
     // return the user page
     func userHandler(_ request: Request) throws -> Future<View> {
         
-        return try request.parameter(User.self).flatMap(to: View.self) { user in
+        return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
             return try flatMap(to: View.self, user.userDetails.query(on: request).first(), user.matchMakingData.query(on: request).first()) { userDetails, matchMakingData in
                 
-                let context = UserContext(title: "User Information", user: user, fullName: "\(user.firstName) \(user.lastName)", userDetails: userDetails, matchMakingData: matchMakingData)
+                let context = UserContext(title: "User Information", user: user, fullName: user.getFullName(), userDetails: userDetails, matchMakingData: matchMakingData)
                 return try request.leaf().render("user", context)
             }
         }
@@ -50,9 +50,9 @@ struct WebsiteController: RouteCollection {
     // CREATE UserDetails handler
     func createUserDetailsHandler(_ request: Request) throws -> Future<View> {
         
-        return try request.parameter(User.self).flatMap(to: View.self) { user in
+        return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
-            let context = CreateUserDetailContext(title: "Create User Details for \(user.firstName) \(user.lastName)", user: user, fullName: " \(user.firstName) \(user.lastName)")
+            let context = CreateUserDetailContext(title: "Create User Details for \(user.firstName) \(user.lastName)", user: user, fullName: user.getFullName())
             return try request.leaf().render("createUserDetails", context)
         }
     }
@@ -62,12 +62,12 @@ struct WebsiteController: RouteCollection {
     // CREATE UserDetails POST handler
     func createUserDetailsPostHandler(_ request: Request) throws -> Future<Response> {
         
-        return try flatMap(to: Response.self, request.parameter(User.self), request.content.decode(UserDetailsPostData.self)) { user, data in
+        return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(UserDetailsPostData.self)) { user, data in
             
             let conflictingSchools = data.conflictingSchools.components(separatedBy: ",")
             
             // create the UserDetails
-            let userDetails = UserDetails(userID: data.creator,
+            let userDetails = UserDetails(userID: user.id!,
                                           emailAddress: data.emailAddress,
                                           mobilePhone: data.mobilePhone,
                                           officePhone: data.officePhone,
@@ -93,7 +93,7 @@ struct WebsiteController: RouteCollection {
     
     // Edit UserDetails Handler
     func editUserDetailsHandler(_ request: Request) throws -> Future<View> {
-        return try flatMap(to: View.self, request.parameter(User.self), request.parameter(UserDetails.self)) { user, userDetails in
+        return try flatMap(to: View.self, request.parameters.next(User.self), request.parameters.next(UserDetails.self)) { user, userDetails in
     
             let context = EditUserDetailsContext(title: "Edit User Details", userDetails:userDetails, user: user)
             return try request.leaf().render("createUserDetails", context)
@@ -104,7 +104,7 @@ struct WebsiteController: RouteCollection {
     func editUserDetailsPostHandler(_ request: Request) throws -> Future<Response> {
         
         // retrieve the paramater for the UserData, and decode the post data
-        return try flatMap(to: Response.self, request.parameter(User.self), request.parameter(UserDetails.self), request.content.decode(UserDetailsPostData.self)) { user, userDetails, data in
+        return try flatMap(to: Response.self, request.parameters.next(User.self), request.parameters.next(UserDetails.self), request.content.decode(UserDetailsPostData.self)) { user, userDetails, data in
 
             userDetails.emailAddress = data.emailAddress
             userDetails.mobilePhone = data.mobilePhone
@@ -117,7 +117,7 @@ struct WebsiteController: RouteCollection {
             let conflictingSchools = data.conflictingSchools.components(separatedBy: ",")
             userDetails.conflictingSchools = conflictingSchools
         
-            userDetails.userID = data.creator
+            userDetails.userID = user.id!
             
             return userDetails.save(on: request).map(to: Response.self) { userDetails in
                 guard let id = userDetails.id else {
@@ -169,7 +169,6 @@ struct UserDetailsPostData: Content {
     // let vapor know the data is from generated page
     static var defaultMediaType = MediaType.urlEncodedForm
     
-    let creator: UUID
     let emailAddress: String
     let mobilePhone: String
     let officePhone: String
@@ -189,6 +188,5 @@ struct EditUserDetailsContext: Codable {
     
     // set editing to true so you can tell the document you're in edit mode
     let editing = true
-    
 }
 

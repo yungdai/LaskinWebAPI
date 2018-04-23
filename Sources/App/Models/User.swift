@@ -8,14 +8,20 @@ final class User: Codable {
     var firstName: String
     var lastName: String
     var userType: String
-    var priviledges: String
+    var privileges: String
     
-    init(firstName: String = "", lastName: String = "", userType: String = "none", priviledges: String = "none") {
+    init(firstName: String = "", lastName: String = "", userType: String = "none", privileges: String = "none") {
         
         self.firstName = firstName
         self.lastName = lastName
         self.userType = userType
-        self.priviledges = priviledges
+        self.privileges = privileges
+    }
+    
+    func getFullName() -> String {
+        
+        let fullName = "\(firstName) \(lastName)"
+        return fullName
     }
 }
 
