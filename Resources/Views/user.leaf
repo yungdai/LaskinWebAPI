@@ -25,8 +25,8 @@
             <td>#(user.userType)</td>
           </tr>
           <tr bgcolor="#aaa">
-            <th>Application Priviledges</th>
-            <td>#(user.priviledges)</td>
+            <th>Application Privileges</th>
+            <td>#(user.privileges)</td>
           </tr>
         </thread>
       </table>

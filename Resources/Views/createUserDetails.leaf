@@ -21,37 +21,37 @@
           <label for=userRequiresAccessibility>Requires Accessibility?</label>
 
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="requiresAccessibility" id="requiresAccessibility" value="true" #if(editing){
-              #if(userDetails.requiresAccessibility == true) {
-                checked="checked" } } >
+            <input class="form-check-input" type="radio" name="requiresAccessibility" id="accessibilityYes" value="true" #if(editing){ #if(userDetails.requiresAccessibility == true) { checked="checked" }} onclick="toggleAccessibilty()">
                 <label class="form-check-label">Yes</label>
               </div>
 
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="requiresAccessibility" id="requiresAccessibility" value="false" #if(editing){
-                  #if(userDetails.requiresAccessibility == false) { checked="checked" } } />
+                <input class="form-check-input" type="radio" name="requiresAccessibility" id="accessibilityNo" value="false" #if(editing){
+                  #if(userDetails.requiresAccessibility == false) { checked="checked" }} onclick="toggleAccessibilty()"/>
                     <label class="form-check-label">No</label>
                   </div>
                 </div>
 
+
+
                 <div class="form-group">
-                  <label for=accessibilityNeeds>Accessibility Needs</label>
+                  <label for=accessibilityNeeds id="accessibilityNeedsLabel">Accessibility Needs</label>
                   <input type="text" name="accessibilityNeeds" class="form-control" id="accessibilityNeeds" #if(editing){value="#(userDetails.accessibilityNeeds)"}/>
                 </div>
 
                 <div class="form-group">
                   <label for=userRequiresAccessibility>Has Dietary Needs?</label>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="hasDietaryNeeds" value="true" #if(editing){
+                    <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="dietaryNeedsYes" value="true" #if(editing){
                       #if(userDetails.hasDietaryNeeds == true) {
-                        checked } }>
+                        checked }} onclick="toggleDietaryNeeds()">
                         <label class="form-check-label">Yes</label>
                       </div>
 
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="hasDietaryNeeds" value="false" #if(editing){
+                        <input class="form-check-input" type="radio" name="hasDietaryNeeds" id="dietaryNeedsNo" value="false" #if(editing){
                           #if(userDetails.hasDietaryNeeds == false) {
-                            checked="checked" } } />
+                            checked="checked" } } onclick="toggleDietaryNeeds()">
                             <label class="form-check-label">No</label>
                           </div>
                         </div>
@@ -74,5 +74,28 @@
                       <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>
                       </form>
                     }
+
+                    <script type="text/javascript">
+
+                    function toggleAccessibilty() {
+                      if (document.getElementById("accessibilityYes").checked) {
+                        document.getElementById("accessibilityNeeds").value = "";
+                        document.getElementById("accessibilityNeeds").disabled = false;
+                      } else {
+                        document.getElementById("accessibilityNeeds").value = "N/A";
+                        document.getElementById("accessibilityNeeds").disabled = true;
+                      }
+                    }
+
+                    function toggleDietaryNeeds() {
+                      if (document.getElementById("dietaryNeedsYes").checked) {
+                        document.getElementById("dietaryNeeds").value = "";
+                        document.getElementById("dietaryNeeds").disabled = false;
+                      } else {
+                        document.getElementById("dietaryNeeds").value = "N/A";
+                        document.getElementById("dietaryNeeds").disabled = true;
+                      }
+                    }
+                    </script>
 
                     #embed("base")
