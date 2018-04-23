@@ -1,5 +1,5 @@
 #set("content") {
-  <h1>#if(editing){Update} else {Submit} User Data</h1>
+  <h1>#if(editing){Update User Data} else {Submit User Data} </h1>
 
   <form method="post">
     <div class="form-group">
@@ -69,14 +69,7 @@
       </div>
 
       <div class="form-group">
-        <label for="creator">Creator</label>
-        <select name="creator" class="form-control" id="creator">
-          #for(user in users) {
-            <option value="#(user.id)" #if(editing){#if(acronym.creatorID == user.id){selected}}>
-              #(user.name)
-            </option>
-          }
-        </select>
+        <label for="creator">Creator: #(fullName)</label>
       </div>
       <!-- this is how you write code that will choose one type of text or another based on if/else  -->
       <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>

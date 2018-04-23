@@ -52,7 +52,7 @@ struct WebsiteController: RouteCollection {
         
         return try request.parameter(User.self).flatMap(to: View.self) { user in
             
-            let context = CreateUserDetailContext(title: "Create User Details for \(user.firstName) \(user.lastName)", user: user)
+            let context = CreateUserDetailContext(title: "Create User Details for \(user.firstName) \(user.lastName)", user: user, fullName: " \(user.firstName) \(user.lastName)")
             return try request.leaf().render("createUserDetails", context)
         }
     }
@@ -152,8 +152,6 @@ struct UserContext: Codable {
     
     let userDetails: UserDetails?
     let matchMakingData: MatchMakingData?
-    
-
 }
 
 
@@ -162,6 +160,7 @@ struct CreateUserDetailContext: Codable {
     
     let title: String
     let user: User
+    let fullName: String
 }
 
 // This is the struct for posting a new UserDetailsData object for creating UserDetails
