@@ -32,8 +32,6 @@
             </div>
           </div>
 
-
-
           <div class="form-group">
             <label for=accessibilityNeeds id="accessibilityNeedsLabel">Accessibility Needs</label>
             <input type="text" name="accessibilityNeeds" class="form-control" id="accessibilityNeeds" #if(editing){value="#(userDetails.accessibilityNeeds)"}/>

@@ -27,7 +27,7 @@
           <lable for=privileges>App Privileges</label>
             <select name="privileges" class="form-control" id="privileges">
               #for(privilege in userPrivileges) {
-                <option value="#(privileges)" #if(editing){#if(user.privileges == privilege){selected}}>
+                <option value="#(privilege)" #if(editing){#if(user.privileges == privilege){selected} else {#if(isFirst) {selected}}}>
                   #(privilege)
                 </option>
               }
