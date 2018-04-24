@@ -2,19 +2,30 @@ import Foundation
 import Vapor
 import FluentPostgreSQL
 
+public enum UserType: String, Codable {
+    
+    case none = "none"
+    case administrator = "administrator"
+    case coach = "coach"
+    case contactPerson = "contact person"
+    case judge = "judge"
+    case mooter = "mooter"
+    case researcher = "researcher"
+}
+
 final class User: Codable {
     
     var id: UUID?
     var firstName: String
     var lastName: String
-    var userType: String
+    var userType: UserType = .none
     var privileges: String
     
     init(firstName: String = "", lastName: String = "", userType: String = "none", privileges: String = "none") {
         
         self.firstName = firstName
         self.lastName = lastName
-        self.userType = userType
+        self.userType = UserType.init(rawValue: userType) ?? .none
         self.privileges = privileges
     }
     
@@ -50,5 +61,9 @@ extension User {
     
     var matchMakingData: Children<User, MatchMakingData> {
         return children(\.userID)
+    }
+    
+    var userTypeSearch: String {
+        return userType.rawValue
     }
 }

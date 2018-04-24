@@ -182,7 +182,6 @@ struct WebsiteController: RouteCollection {
         return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
             let fullName = user.getFullName()
-            
             let context = EditUserContext(title: "Edit User: \(fullName) ", user: user, fullName: fullName, userTypes: User.getUserTypes(), userPrivileges: User.getPrivileges())
             
             return try request.leaf().render("createUser", context)
@@ -196,7 +195,7 @@ struct WebsiteController: RouteCollection {
             
             user.firstName = data.firstName
             user.lastName = data.lastName
-            user.userType = data.userType
+            user.userType = UserType.init(rawValue: data.userType) ?? .none
             user.privileges = data.privileges
             
             if data.privileges == "" {

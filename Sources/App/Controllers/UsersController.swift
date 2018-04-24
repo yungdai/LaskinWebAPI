@@ -73,7 +73,7 @@ struct UsersController: RouteCollection {
             
             try or.filter(\.firstName == searchTerm)
             try or.filter(\.lastName == searchTerm)
-            try or.filter(\.userType == searchTerm)
+            try or.filter(\.userTypeSearch == searchTerm)
             try or.filter(\.privileges == searchTerm)
         }.all()
     }
