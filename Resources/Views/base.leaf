@@ -18,10 +18,10 @@
         <li class="nav-item #if(title == "Homepage"){active}">
           <a href="/" class="nav-link">Home</a>
         </li>
-        <li class="nav-item #if(title == "All Users"){active}">
+        <!-- <li class="nav-item #if(title == "All Users"){active}">
           <a href="/" class="nav-link">All Users</a>
-        </li>
-        <li class="nav-item #if(title == "Create New User"){active}">
+        </li> -->
+        <li class="nav-item #if(title == "Create New User"){active}" #if(title == "Laskin Users") {hidden = "false"} else { hidden = "true"} >
           <a href="/create-user" class="nav-link">Create New User</a>
         </li>
       </ul>
