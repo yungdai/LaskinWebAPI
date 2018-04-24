@@ -9,7 +9,7 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">TIL</a>
+    <a class="navbar-brand" href="#">Laskin Web API</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -19,7 +19,10 @@
           <a href="/" class="nav-link">Home</a>
         </li>
         <li class="nav-item #if(title == "All Users"){active}">
-          <a href="/users" class="nav-link">All Users</a>
+          <a href="/" class="nav-link">All Users</a>
+        </li>
+        <li class="nav-item #if(title == "Create New User"){active}">
+          <a href="/create-user" class="nav-link">Create New User</a>
         </li>
       </ul>
     </div>

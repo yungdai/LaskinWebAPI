@@ -45,7 +45,7 @@ extension UserDetails: Parameter {}
 extension UserDetails {
     
     // add a computered property to acronym to get the user object of the User's owner.  This returns fluent's generic Parent Type
-    var user: Parent<UserDetails, User> {
+    var creator: Parent<UserDetails, User> {
         // Users Flurent's parent function to retreive the parent.  This take the keypath of the user reference on the acronym.
         return parent(\.userID)
     }

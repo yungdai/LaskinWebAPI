@@ -27,14 +27,14 @@ struct MatchMakingDataController: RouteCollection {
     
     // GET by api/users/#id
     func getHandler(_ request: Request) throws -> Future<MatchMakingData> {
-        return try request.parameter(MatchMakingData.self)
+        return try request.parameters.next(MatchMakingData.self)
     }
     
     // UPDATE
     func updateHandler(_ request: Request) throws -> Future<MatchMakingData> {
         
         // extract the users from the users from user ID at api/user/#user/userDetails/#id
-        return try flatMap(to: MatchMakingData.self, request.parameter(MatchMakingData.self), request.content.decode(MatchMakingData.self)) { data, updatedData in
+        return try flatMap(to: MatchMakingData.self, request.parameters.next(MatchMakingData.self), request.content.decode(MatchMakingData.self)) { data, updatedData in
             
             // update the found user with the updated model and then save
             data.userID = updatedData.userID
@@ -55,7 +55,7 @@ struct MatchMakingDataController: RouteCollection {
     func deleteHandler(_ request: Request) throws -> Future<HTTPStatus> {
         
         // extract user form address param
-        return try request.parameter(MatchMakingData.self).flatMap(to: HTTPStatus.self) { data in
+        return try request.parameters.next(MatchMakingData.self).flatMap(to: HTTPStatus.self) { data in
             
             return data.delete(on: request).transform(to: HTTPStatus.noContent)
         }

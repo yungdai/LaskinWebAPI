@@ -26,14 +26,14 @@ struct UserDetailsController: RouteCollection {
     
     // GET by api/users/#id
     func getHandler(_ request: Request) throws -> Future<UserDetails> {
-        return try request.parameter(UserDetails.self)
+        return try request.parameters.next(UserDetails.self)
     }
     
     // UPDATE
     func updateHandler(_ request: Request) throws -> Future<UserDetails> {
         
         // extract the users from the users from user ID at api/user/#user/userDetails/#id
-        return try flatMap(to: UserDetails.self, request.parameter(UserDetails.self), request.content.decode(UserDetails.self)) { userDetails, updatedUserDetails in
+        return try flatMap(to: UserDetails.self, request.parameters.next(UserDetails.self), request.content.decode(UserDetails.self)) { userDetails, updatedUserDetails in
             
             // update the found user with the updated model and then save
             userDetails.userID = updatedUserDetails.userID
@@ -54,7 +54,7 @@ struct UserDetailsController: RouteCollection {
     func deleteHandler(_ request: Request) throws -> Future<HTTPStatus> {
         
         // extract user form address param
-        return try request.parameter(UserDetails.self).flatMap(to: HTTPStatus.self) { user in
+        return try request.parameters.next(UserDetails.self).flatMap(to: HTTPStatus.self) { user in
 
             return user.delete(on: request).transform(to: HTTPStatus.noContent)
         }

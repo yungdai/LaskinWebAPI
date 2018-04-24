@@ -15,13 +15,13 @@
             User Type
           </th>
           <th>
-            App Priviledges
+            App Privileges
           </th>
         </tr>
       </thread>
       <tbody>
         #for(user in users) {
-          <tr><td><a href="/users/#(user.id)">#(user.firstName)<a></td><td>#(user.lastName)</td><td>#(user.userType)</td><td>#(user.priviledges)</td></tr>
+          <tr><td><a href="/users/#(user.id)">#(user.firstName)<a></td><td>#(user.lastName)</td><td>#(user.userType)</td><td>#(user.privileges)</td></tr>
           }
         </tbody>
       </table>
