@@ -30,20 +30,20 @@ struct UsersController: RouteCollection {
     
     // GET by api/users/#id
     func getHandler(_ request: Request) throws -> Future<User> {
-        return try request.parameter(User.self)
+        return try request.parameters.next(User.self)
     }
     
     // UPDATE
     func updateHandler(_ request: Request) throws -> Future<User> {
         
         // extract the users from the users from user ID at api/users/#id
-        return try flatMap(to: User.self, request.parameter(User.self), request.content.decode(User.self)) { user, updatedUser in
+        return try flatMap(to: User.self, request.parameters.next(User.self), request.content.decode(User.self)) { user, updatedUser in
             
             // update the found user with the updated model and then save
             user.firstName = updatedUser.firstName
             user.lastName = updatedUser.lastName
             user.userType = updatedUser.userType
-            user.priviledges = updatedUser.priviledges
+            user.privileges = updatedUser.privileges
             
             return user.save(on: request)
         }
@@ -53,7 +53,7 @@ struct UsersController: RouteCollection {
     func deleteHandler(_ request: Request) throws -> Future<HTTPStatus> {
         
         // extract user form address param
-        return try request.parameter(User.self).flatMap(to: HTTPStatus.self) { user in
+        return try request.parameters.next(User.self).flatMap(to: HTTPStatus.self) { user in
             
             // delete the user using the .delete(on:) fuction and transform the response to a 204 No Content answer since it's successfully deleted and no longer there.
             return user.delete(on: request).transform(to: HTTPStatus.noContent)
@@ -74,7 +74,7 @@ struct UsersController: RouteCollection {
             try or.filter(\.firstName == searchTerm)
             try or.filter(\.lastName == searchTerm)
             try or.filter(\.userType == searchTerm)
-            try or.filter(\.priviledges == searchTerm)
+            try or.filter(\.privileges == searchTerm)
         }.all()
     }
     
@@ -103,7 +103,7 @@ struct UsersController: RouteCollection {
     // GET UserDetails for User
     func getUserDetailsHandler(_ request: Request) throws -> Future<[UserDetails]> {
         //  Feth the user specified in the request's paramaters and unwarp the returned future.
-        return try request.parameter(User.self)
+        return try request.parameters.next(User.self)
             .flatMap(to: [UserDetails].self) { user in
                 try user.userDetails.query(on: request).all()
         }
@@ -112,7 +112,7 @@ struct UsersController: RouteCollection {
     // GET Match Making Data for User
     func getMatchMakingDataHandler(_ request: Request) throws -> Future<[MatchMakingData]> {
         //  Feth the user specified in the request's paramaters and unwarp the returned future.
-        return try request.parameter(User.self)
+        return try request.parameters.next(User.self)
             .flatMap(to: [MatchMakingData].self) { user in
                 try user.matchMakingData.query(on: request).all()
         }

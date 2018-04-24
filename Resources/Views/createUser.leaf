@@ -1,0 +1,42 @@
+#set("content") {
+  <h1>#if(editing){Update User: #(fullName)} else {Create New User} </h1>
+
+  <form method="post">
+    <div class="form-group">
+      <lable for=firstName>First Name</label>
+        <input type="text" name="firstName" class="form-control" id="firstName" #if(editing){value="#(user.firstName)"}/>
+      </div>
+
+      <div class="form-group">
+        <label for=lastName>Last Name</label>
+        <input type="text" name="lastName" class="form-control" id="lastName" #if(editing){value="#(user.lastName)"}/>
+      </div>
+
+      <div class="form-group">
+        <lable for=userType>User Type</label>
+          <select name="userType" class="form-control" id="userType">
+            #for(userType in userTypes) {
+              <option value="#(userType)" #if(editing){#if(user.userType == userType){selected}}>
+                #(userType)
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <lable for=privileges>App Privileges</label>
+            <select name="privileges" class="form-control" id="privileges">
+              #for(privilege in userPrivileges) {
+                <option value="#(privilege)" #if(editing){#if(user.privileges == privilege){selected} else {#if(isFirst) {selected}}}>
+                  #(privilege)
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- this is how you write code that will choose one type of text or another based on if/else  -->
+          <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>
+        </form>
+      }
+
+      #embed("base")

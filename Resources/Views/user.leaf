@@ -5,6 +5,7 @@
 
     #if(user) {
       <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <a href="/users/#(user.id)/edit" class="button">Edit User</a>
         <thread class="thread-light">
           <col width="25%">
           <tr bgcolor="#aaa">
@@ -25,13 +26,64 @@
             <td>#(user.userType)</td>
           </tr>
           <tr bgcolor="#aaa">
-            <th>Application Priviledges</th>
-            <td>#(user.priviledges)</td>
+            <th>Application Privileges</th>
+            <td>#(user.privileges)</td>
           </tr>
         </thread>
       </table>
     } else {
       <h2>Uh Oh!  No user found!</h2>
+    }
+
+    #if(userDetails) {
+      <h3 align="center">User Details</h3>
+      <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <thread class="thread-light">
+          <col width="25%">
+          <tr bgcolor="#aaa">
+            <th>Email Address</th>
+            <td>#(userDetails.emailAddress)</td>
+          </tr>
+          <tr bgcolor="#eee">
+            <th>Mobile Phone</th>
+            <td>#(userDetails.mobilePhone)</td>
+          </tr>
+          <tr bgcolor="#aaa">
+            <th>Office Phone</th>
+            <td>#(userDetails.officePhone)</td>
+          </tr>
+          <tr bgcolor="#eee">
+            <th bgcolor="#eee">Requires Accessibility</th>
+            <td>#if(userDetails.requiresAccessibility){Yes} else {No}</td>
+          </tr>
+          #if(userDetails.requiresAccessibility) {
+            <tr bgcolor="#aaa">
+              <th>Accessibility Needs</th>
+              <td>#(userDetails.accessibilityNeeds)</td>
+            </tr>
+          }
+            <tr #if(userDetails.requiresAccessibility){bgcolor="#eee"} else { bgcolor="#aaa"}>
+            <th>Has Dietary Needs</th>
+            <td>#if(userDetails.hasDietaryNeeds){Yes} else {No}</td>
+          </tr>
+
+          #if(userDetails.hasDietaryNeeds) {
+            <tr #if(userDetails.requiresAccessibility){bgcolor="#aaa"} else { bgcolor="#eee"}>
+              <th>Last Name</th>
+              <td>#(userDetails.dietaryNeeds)</td>
+            </tr>
+          }
+
+          <tr #if(userDetails.requiresAccessibility){bgcolor="#eee"} else { bgcolor="#aaa"}>
+            <th bgcolor="#eee">Conflicting Schools</th>
+            <td>#for(school in userDetails.conflictingSchools) { #(school), }</td>
+          </tr>
+        </thread>
+      </table>
+
+      <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="button">Edit User Details</a>
+    } else {
+      <a href="/users/#(user.id)/userDetails/create" class="button">Add User Details</a>
     }
 
     <!-- <p>
