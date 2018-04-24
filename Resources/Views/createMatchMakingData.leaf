@@ -1,0 +1,101 @@
+#set("content") {
+  <h1>#if(editing){Update Match Making Data For: #(fullName)} else {Create New Match Making Data for: #(fullName) } </h1>
+
+  <form method="post">
+    <div class="form-group col-md-6">
+      <lable for=school>School</label>
+        <input type="text" name="school" class="form-control" id="school" placeholder="School Name" #if(editing){value="#(matchMakingData.school)"}>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for=city>City</label>
+          <input type="text" name="city" class="form-control" id="city" placeholder="City" #if(editing){value="#(matchMakingData.city)"}>
+        </div>
+
+        <div class="form-group col-md-6">
+          <lable for=province>Province</label>
+            <select name="province" class="form-control" id="province">
+              #for(province in provinces) {
+                <option value="#(province)" #if(editing){#if(matchMakingData.province == province){selected}}>
+                  #(province)
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group col-md-6">
+            <lable for=timeZone>Time Zone</label>
+              <select name="timeZone" class="form-control" id="timeZone">
+                #for(timeZone in timeZones) {
+                  <option value="#(timeZone)" #if(editing){#if(matchMakingData.timeZone == timeZone){selected}}>
+                    #(timeZone)
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for=needsInterpreter>Needs Intepreter?</label>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="needsInterpreter" id="needsInterpreterYes" value="true" #if(editing){ #if(matchMakingData.needsInterpreter == true) { checked="checked" }} onclick="toogleInterpreter()">
+              <label class="form-check-label">Yes</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="needsInterpreter" id="needsInterpreterNo" value="false" #if(editing){
+                #if(matchMakingData.needsInterpreter == false) { checked="checked" }} onclick="toogleInterpreter()"/>
+                <label class="form-check-label">No</label>
+              </div>
+            </div>
+
+            <div class="form-group col-md-6">
+              <lable for=interpreterType>Interpreter Type</label>
+                <select name="interpreterType" class="form-control" id="interpreterType">
+                  <option selected>Choose...</option>
+                  <option value="English" #if(editing){#if(matchMakingData.interpreterType == "English"){selected}}></option>
+                  <option value="French" #if(editing){#if(matchMakingData.interpreterType == "French"){selected}}></option>
+                  <option value="None" #if(editing){#if(matchMakingData.interpreterType == "None"){selected}}></option>
+                </select>
+              </div>
+
+              <div class="form-group col-md-6">
+                <lable for=order>Interpreter Type</label>
+                  <select name="order" class="form-control" id="order">
+                    <option selected>Choose...</option>
+                    <option value="1" #if(editing){#if(matchMakingData.order == 1){selected}}></option>
+                    <option value="2" #if(editing){#if(matchMakingData.order == 2){selected}}></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-md-6">
+                  <label for=additionalNotes>Additional Notes</label>
+                  <input type="text" name="additionalNotes" class="form-control" id="additionalNotes" placeholder="Enter in any other additional notes here" #if(editing){value="#(matchMakingData.additionalNotes)"}>
+                </div>
+
+                <!-- this is how you write code that will choose one type of text or another based on if/else  -->
+                <button type="submit" class="btn btn-primary" align-="center">#if(editing){Update} else {Submit}</button>
+              </form>
+
+              <div class="form-group">
+                <label for="creator">Match Making Data Assigned to: #(fullName)</label>
+              </div>
+            }
+
+            <script type="text/javascript">
+            function toogleInterpreter() {
+              if (document.getElementById("requiresAccessibility").checked) {
+                document.getElementById("requiresAccessibility").value = true;
+                document.getElementById("interpreterType").value = "";
+                document.getElementById("interpreterType").disabled = false;
+              } else {
+                document.getElementById("requiresAccessibility").value = false
+                document.getElementById("accessibilityNeeds").value = "None";
+                document.getElementById("accessibilityNeeds").disabled = true;
+              }
+            }
+            </script>
+
+            #embed("base")

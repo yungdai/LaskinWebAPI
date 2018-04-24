@@ -83,18 +83,19 @@
       <div style="width:90%" align="center">
         <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
         <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="btn btn-primary" role="button">Edit User Details</a>
+        <a href="/users/#(user.id)/matchMakingData/#(matchMakingData.id)/edit" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Edit Match Making Data</a>
       </div>
     } else {
       <div style="width:90%" align="center">
         <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
-        <a href="/users/#(user.id)/userDetails/create" class="btn btn-primary" role="button">Add User Details</a>
+        <a href="/users/#(user.id)/userDetails-create" class="btn btn-primary" role="button">Add User Details</a>
+        <a href="/users/#(user.id)/matchMakingData-create" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Add Match Making Data</a>
       </div>
     }
 
     <!-- <p>
     Create by #(creator.name)
   </p> -->
-
 }
 
 #embed("base")
