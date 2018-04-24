@@ -4,17 +4,17 @@
   <form method="post">
     <div class="form-group">
       <lable for=emailAddress>Email Address</label>
-        <input type="text" name="emailAddress" class="form-control" id="emailAddress" #if(editing){value="#(userDetails.emailAddress)"}/>
+        <input type="email" name="emailAddress" class="form-control" id="emailAddress" #if(editing){value="#(userDetails.emailAddress)"}/>
       </div>
 
       <div class="form-group">
         <label for=mobilePhone>Mobile Phone</label>
-        <input type="text" name="mobilePhone" class="form-control" id="mobilePhone" #if(editing){value="#(userDetails.mobilePhone)"}/>
+        <input type="tel" name="mobilePhone" class="form-control" id="mobilePhone" #if(editing){value="#(userDetails.mobilePhone)"}/>
       </div>
 
       <div class="form-group">
         <lable for=officePhone>Office Phone</label>
-          <input type="text" name="officePhone" class="form-control" id="officePhone" #if(editing){value="#(userDetails.officePhone)"}/>
+          <input type="tel" name="officePhone" class="form-control" id="officePhone" #if(editing){value="#(userDetails.officePhone)"}/>
         </div>
 
         <div class="form-group">
@@ -59,16 +59,16 @@
                     <input type="text" name="dietaryNeeds" class="form-control" id="dietaryNeeds" #if(editing){value="#(userDetails.dietaryNeeds)"}/>
                   </div>
 
-                  <div class="form-group">
-                    <label for=conflictingSchools>Conflicting Schools (Separate Schools with a comma)</label>
-                    <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(editing){value="#for(school in userDetails.conflictingSchools) { #if(isLast){#(school)} else {#(school),}}"}/>
-                  </div>
+
+                    <div class="form-group" #if(user.userType != "judge"){ hidden }>
+                      <label for=conflictingSchools>Conflicting Schools (Separate Schools with a comma)</label>
+                      <input type="text" name="conflictingSchools" class="form-control" id="conflictingSchools" #if(user.userType != "judge"){ value="N/A" } #if(editing){value="#for(school in userDetails.conflictingSchools) { #if(isLast){#(school)} else {#(school),}}"}/>
+                    </div>
 
                   <div class="form-group">
                     <label for="creator">User Data Assigned to: #(fullName)</label>
+                    <!-- this is how you write code that will choose one type of text or another based on if/else  -->
                   </div>
-
-                  <!-- this is how you write code that will choose one type of text or another based on if/else  -->
                   <button type="submit" class="btn btn-primary">#if(editing){Update} else {Submit}</button>
                 </form>
               }

@@ -80,21 +80,75 @@
           </tr>
         </thread>
       </table>
-      <div style="width:90%" align="center">
-        <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
-        <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="btn btn-primary" role="button">Edit User Details</a>
-      </div>
-    } else {
-      <div style="width:90%" align="center">
-        <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
-        <a href="/users/#(user.id)/userDetails/create" class="btn btn-primary" role="button">Add User Details</a>
-      </div>
     }
 
+    #if(matchMakingData) {
+      <h3 align="center">Match Making Data</h3>
+      <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <thread class="thread-light">
+          <col width="25%">
+          <tr bgcolor="#aaa">
+            <th>School</th>
+            <td>#(matchMakingData.school)</td>
+          </tr>
+          <tr bgcolor="#eee">
+            <th>City</th>
+            <td>#(matchMakingData.city)</td>
+          </tr>
+          <tr bgcolor="#aaa">
+            <th>Province</th>
+            <td>#(matchMakingData.province)</td>
+          </tr>
+          <tr bgcolor="#eee">
+            <th>Time Zone</th>
+            <td>#(matchMakingData.timeZone)</td>
+          </tr>
+          <tr bgcolor="#aaa">
+            <th>Needs Interpreter</th>
+            <td>#if(matchMakingData.needsInterpreter){Yes} else {No}</td>
+          </tr>
+          #if(matchMakingData.needsInterpreter) {
+            <tr bgcolor="#eee">
+              <th>Intepreter Type</th>
+              <td>#(matchMakingData.interpreterType)</td>
+            </tr>
+          }
+          <tr #if(matchMakingData.needsInterpreter){bgcolor="#aaa"} else { bgcolor="#eee"}>
+            <th>Order</th>
+            <td>#if(matchMakingData.order){Yes} else {No}</td>
+          </tr>
+
+
+          #if(matchMakingData.needsInterpreter) {
+            <tr #if(userDetails.requiresAccessibility){bgcolor="#aaa"} else { bgcolor="#eee"}>
+              <th>Additional Notes</th>
+              <td>#(matchMakingData.additionalNotes)</td>
+            </tr>
+          }
+        </thread>
+      </table>
+    }
+
+    <div style="width:90%" align="center">
+      <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
+
+      #if(userDetails) {
+          <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="btn btn-primary" role="button">Edit User Details</a>
+      } else {
+        <a href="/users/#(user.id)/userDetails-create" class="btn btn-primary" role="button">Add User Details</a>
+      }
+
+      #if(user.userType == "mooter") {
+        #if(matchMakingData) {
+          <a href="/users/#(user.id)/matchMakingData/#(matchMakingData.id)/edit" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Edit Match Making Data</a>
+        } else {
+          <a href="/users/#(user.id)/matchMakingData-create" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Add Match Making Data</a>
+        }
+      }
+    </div>
     <!-- <p>
     Create by #(creator.name)
   </p> -->
-
 }
 
 #embed("base")
