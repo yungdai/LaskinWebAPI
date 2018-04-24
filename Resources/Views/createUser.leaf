@@ -12,7 +12,7 @@
         <label for="lastName">Last Name</label>
         <input type="text" name="lastName" class="form-control" id="lastName" placeholder="Enter Last Name" #if(editing){value="#(user.lastName)"}>
       </div>
-      
+
       <div class="form-group col-md-6">
         <lable for=userType>User Type</label>
           <select name="userType" class="form-control" id="userType">
@@ -33,9 +33,10 @@
                 </option>
               }
             </select>
+            <p></p>
+            <button type="submit" class="btn btn-primary" align-="center">#if(editing){Update} else {Submit}</button>
           </div>
-          <p></p>
-          <button type="submit" class="btn btn-primary" align-="center">#if(editing){Update} else {Submit}</button>
+
         </form>
       </div>
     }

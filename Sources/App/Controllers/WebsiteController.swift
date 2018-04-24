@@ -223,7 +223,7 @@ struct WebsiteController: RouteCollection {
         return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
             let fullName = user.getFullName()
-            let context = CreateMatchMakingDataContext(title: "Create Match Making Data for \(fullName)", user: user, fullName: fullName, provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones())
+            let context = CreateMatchMakingDataContext(title: "Create Match Making Data for \(fullName)", user: user, fullName: fullName, provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones(), orders:["1", "2"], interpreters: ["English", "French", "None"])
             return try request.leaf().render("createMatchMakingData", context)
         }
     }
@@ -231,9 +231,7 @@ struct WebsiteController: RouteCollection {
     func createMatchMakingDataPostHandler(_ request: Request) throws -> Future<Response> {
         
         return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(MatchMakingDataPostData.self)) { user, data in
-            
-            
-            
+
             let matchMakingData = MatchMakingData(userID: user.id!, school: data.school, city: data.city, province:data.province, timeZone: TimeZones.timeZoneValue(by: data.timeZone), needsInterpreter: data.needsInterpreter, interpreterType: data.interpreterType, order: Int(data.order) ?? 0, additionalNotes: data.additionalNotes)
             
             return matchMakingData.save(on: request).map(to: Response.self) { matchMakingData in
@@ -253,7 +251,7 @@ struct WebsiteController: RouteCollection {
         return try flatMap(to: View.self, request.parameters.next(User.self), request.parameters.next(MatchMakingData.self)) { user, matchMakingData in
             
             let fullName = user.getFullName()
-            let context = EditMatchMakingDataContext(title: "Edit Match Making Data for \(fullName)", user: user, fullName: fullName, provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones())
+            let context = EditMatchMakingDataContext(title: "Edit Match Making Data for \(fullName)", user: user, matchMakingData: matchMakingData, fullName: fullName, provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones(), orders:["1", "2"], interpreters: ["English", "French", "None"])
             return try request.leaf().render("createMatchMakingData", context)
         }
     }
@@ -334,6 +332,8 @@ struct CreateMatchMakingDataContext: Codable {
     
     let provinces: [String]
     let timeZones: [String]
+    let orders: [String]
+    let interpreters: [String]
 }
 
 // This is the struct for posting a new UserDetailsData object for creating UserDetails
@@ -404,10 +404,15 @@ struct EditMatchMakingDataContext: Codable {
     
     let title: String
     let user: User
+    let matchMakingData: MatchMakingData
     let fullName: String
 
     let provinces: [String]
     let timeZones: [String]
+    let orders: [String]
+    let interpreters: [String]
+    
+    let editing = true
 }
 
 enum TimeZones: Int, Codable {
