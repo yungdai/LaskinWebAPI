@@ -5,6 +5,7 @@
 
     #if(user) {
       <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <a href="/users/#(user.id)/edit" class="button">Edit User</a>
         <thread class="thread-light">
           <col width="25%">
           <tr bgcolor="#aaa">

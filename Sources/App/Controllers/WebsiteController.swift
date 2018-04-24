@@ -20,7 +20,17 @@ struct WebsiteController: RouteCollection {
         // GET the edit User Details page
         router.get("users", User.parameter, "userDetails", UserDetails.parameter, "edit", use: editUserDetailsHandler)
         router.post("users", User.parameter, "userDetails", UserDetails.parameter, "edit", use: editUserDetailsPostHandler)
+        
+        
+        // CREATE USER and POST DATA
+        router.get("create-user", use: createUserHandler)
+        router.post("create-user", use: createUserPostHandler)
+        
+        // EDIT USER and POST DATA
+        router.get("users", User.parameter, "edit", use: editUserHandler)
+        router.post("users", User.parameter, "edit", use: editUserPostHandler)
     }
+
     
     // this is the default where the templates will spawn from
     func indexHandler(_ request: Request) throws -> Future<View> {
@@ -128,6 +138,79 @@ struct WebsiteController: RouteCollection {
             }
         }
     }
+    
+    // CREATE USER
+    func createUserHandler(_ request: Request) throws -> Future<View> {
+        
+        // send an array of userTypes and privileges to make sure they're selectable
+        let context = CreateUserContext(title: "Create User", userTypes: User.getUserTypes(), userPrivileges: User.getPrivileges())
+        
+        return try request.leaf().render("createUser", context)
+    }
+    
+    // CREATE POST USER
+    func createUserPostHandler(_ request: Request) throws ->Future<Response> {
+        
+        return try request.content.decode(UserPostData.self).flatMap(to: Response.self) { data in
+            
+            // create the user
+            let user = User(firstName: data.firstName, lastName: data.lastName, userType: data.userType, privileges: data.privileges)
+            
+            // save the user and check the ID to make sure it's saved properly
+            return user.save(on: request).map(to: Response.self) { user in
+                
+                guard let id = user.id else {
+                    
+                    // send home for now, but we will need to deal with an error in creating a user in the future
+                    return request.redirect(to: "/")
+                }
+                
+                // All okay, redirect to the newly created user
+                return request.redirect(to: "/users/\(id)")
+            }
+        }
+    }
+    
+    // EDIT USER
+    func editUserHandler(_ request: Request) throws -> Future<View> {
+
+        return try request.parameters.next(User.self).flatMap(to: View.self) { user in
+            
+            let fullName = user.getFullName()
+            
+            let context = EditUserContext(title: "Edit User: \(fullName) ", user: user, fullName: fullName, userTypes: User.getUserTypes(), userPrivileges: User.getPrivileges())
+            
+            return try request.leaf().render("createUser", context)
+        }
+    }
+    
+    // EDIT USER POST Handler
+    func editUserPostHandler(_ request: Request) throws -> Future<Response> {
+        
+        return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(UserPostData.self)) { user, data in
+            
+            user.firstName = data.firstName
+            user.lastName = data.lastName
+            user.userType = data.userType
+            user.privileges = data.privileges
+            
+            if data.privileges == "" {
+                user.privileges = "none"
+            }
+            
+            return user.save(on: request).map(to: Response.self) { user in
+                
+                guard let id = user.id else {
+                    
+                    // failure
+                    return request.redirect(to: "/")
+                }
+                
+                // success!
+                return request.redirect(to: "/users/\(id)")
+            }
+        }
+    }
 }
 
 extension Request {
@@ -154,6 +237,12 @@ struct UserContext: Codable {
     let matchMakingData: MatchMakingData?
 }
 
+struct CreateUserContext: Codable {
+    
+    let title: String
+    let userTypes: [String]
+    let userPrivileges: [String]
+}
 
 // This is the first part to creating a Create UserDetail Page
 struct CreateUserDetailContext: Codable {
@@ -179,7 +268,17 @@ struct UserDetailsPostData: Content {
     let conflictingSchools: String
 }
 
-// Edit UserDetails struct
+struct UserPostData: Content {
+    
+    static var defaultMediaType = MediaType.urlEncodedForm
+    
+    let firstName: String
+    let lastName: String
+    let userType: String
+    let privileges: String
+}
+
+// EDIT UserDetails struct
 struct EditUserDetailsContext: Codable {
     
     let title: String
@@ -191,3 +290,14 @@ struct EditUserDetailsContext: Codable {
     let editing = true
 }
 
+// EDIT User struct
+struct EditUserContext: Codable {
+    
+    let title: String
+    let user: User
+    let fullName: String
+    let userTypes: [String]
+    let userPrivileges: [String]
+    
+    let editing = true
+}
