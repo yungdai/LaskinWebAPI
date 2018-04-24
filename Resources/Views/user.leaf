@@ -5,7 +5,7 @@
 
     #if(user) {
       <table style="width:90%" align="center" class="table table-bordered table-hover">
-        <a href="/users/#(user.id)/edit" class="button">Edit User</a>
+
         <thread class="thread-light">
           <col width="25%">
           <tr bgcolor="#aaa">
@@ -62,7 +62,7 @@
               <td>#(userDetails.accessibilityNeeds)</td>
             </tr>
           }
-            <tr #if(userDetails.requiresAccessibility){bgcolor="#eee"} else { bgcolor="#aaa"}>
+          <tr #if(userDetails.requiresAccessibility){bgcolor="#eee"} else { bgcolor="#aaa"}>
             <th>Has Dietary Needs</th>
             <td>#if(userDetails.hasDietaryNeeds){Yes} else {No}</td>
           </tr>
@@ -80,10 +80,15 @@
           </tr>
         </thread>
       </table>
-
-      <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="button">Edit User Details</a>
+      <div style="width:90%" align="center">
+        <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
+        <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="btn btn-primary" role="button">Edit User Details</a>
+      </div>
     } else {
-      <a href="/users/#(user.id)/userDetails/create" class="button">Add User Details</a>
+      <div style="width:90%" align="center">
+        <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
+        <a href="/users/#(user.id)/userDetails/create" class="btn btn-primary" role="button">Add User Details</a>
+      </div>
     }
 
     <!-- <p>
