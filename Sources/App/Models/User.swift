@@ -2,6 +2,17 @@ import Foundation
 import Vapor
 import FluentPostgreSQL
 
+public enum UserType: String, Codable {
+    
+    case none = "none"
+    case administrator = "administrator"
+    case coach = "coach"
+    case contactPerson = "contact person"
+    case judge = "judge"
+    case mooter = "mooter"
+    case researcher = "researcher"
+}
+
 final class User: Codable {
     
     var id: UUID?
