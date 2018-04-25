@@ -18,11 +18,6 @@ public func configure(
     // Added for Authentication Support
     try services.register(AuthenticationProvider())
 
-    /// Register routes to the router
-    let router = EngineRouter.default()
-    try routes(router)
-    services.register(router, as: Router.self)
-
     /// Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
@@ -75,6 +70,12 @@ public func configure(
     // ADDED FOR AUTHENTICATION:
     // Make sure the user database is to use the User.Public Database by default
     User.Public.defaultDatabase = .psql
+
+    // For Authentication, the router must happen AFTER the migrations.
+    /// Register routes to the router
+    let router = EngineRouter.default()
+    try routes(router)
+    services.register(router, as: Router.self)
     
-    
+    // Configure the rest of the application here
 }

@@ -1,6 +1,7 @@
 import Foundation
 import Vapor
 import FluentPostgreSQL
+import Authentication
 
 public enum UserType: String, Codable {
     
@@ -94,4 +95,17 @@ extension User {
     var matchMakingData: Children<User, MatchMakingData> {
         return children(\.userID)
     }
+}
+
+// This is used for basic authentication
+extension User: BasicAuthenticatable {
+
+    // assign the user properties that will holder the userName and password.
+    static let usernameKey: UsernameKey = \User.userName
+    static let passwordKey: PasswordKey = \User.password
+}
+
+// Add this so Token Authenicatable knows what model to use for the Token
+extension User: TokenAuthenticatable {
+    typealias TokenType = Token
 }

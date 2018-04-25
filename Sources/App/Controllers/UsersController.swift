@@ -17,6 +17,11 @@ struct UsersController: RouteCollection {
         userRoutes.get("sort", use: sortHandler)
         userRoutes.get(User.parameter, "userDetails", use: getUserDetailsHandler)
         userRoutes.get(User.parameter, "matchMakingData", use: getMatchMakingDataHandler)
+        
+        // Create the middleware for authentication
+        let basicAuthMiddleWear = User.basicAuthMiddleware(using: BCryptDigest())
+        let basicAuthGroup = userRoutes.grouped(basicAuthMiddleWear)
+        basicAuthGroup.post("login", use: loginHandler)
     }
     
     // CREATE
@@ -127,6 +132,14 @@ struct UsersController: RouteCollection {
             .flatMap(to: [MatchMakingData].self) { user in
                 try user.matchMakingData.query(on: request).all()
         }
+    }
+    
+    // LOGIN Authentication
+    func loginHandler(_ request: Request) throws -> Future<Token> {
+        
+        let user = try request.requireAuthenticated(User.self)
+        let token = try Token.generate(for: user)
+        return token.save(on: request)
     }
 }
 

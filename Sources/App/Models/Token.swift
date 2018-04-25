@@ -2,6 +2,7 @@ import Vapor
 import Fluent
 import FluentPostgreSQL
 import Foundation
+import Authentication
 
 // For authentication
 import Crypto
@@ -36,3 +37,17 @@ extension Token {
         return try Token(token: random.base64EncodedString(), userID: user.requireID())
     }
 }
+
+// Add for Authentication with a token
+extension Token: Authentication.Token {
+    
+    static let userIDKey: UserIDKey = \Token.userID
+    typealias  UserType = User
+}
+
+// Add this to tell it the key for the token string
+extension Token: BearerAuthenticatable {
+    static let tokenKey: TokenKey = \Token.token
+}
+
+
