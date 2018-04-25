@@ -18,14 +18,14 @@ final class User: Codable {
     var id: UUID?
     var firstName: String
     var lastName: String
-    var userType: UserType = .none
+    var userType: String
     var privileges: String
     
     init(firstName: String = "", lastName: String = "", userType: String = "none", privileges: String = "none") {
         
         self.firstName = firstName
         self.lastName = lastName
-        self.userType = UserType.init(rawValue: userType) ?? .none
+        self.userType = userType
         self.privileges = privileges
     }
     
@@ -61,9 +61,5 @@ extension User {
     
     var matchMakingData: Children<User, MatchMakingData> {
         return children(\.userID)
-    }
-    
-    var userTypeSearch: String {
-        return userType.rawValue
     }
 }

@@ -27,7 +27,7 @@
 
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="requiresAccessibility" id="accessibilityNo" value="false" #if(editing){
-              #if(userDetails.requiresAccessibility == false) { checked="checked" }} onclick="toggleAccessibilty()"/>
+              #if(userDetails.requiresAccessibility == false) { checked="checked" }} onclick="toggleAccessibilty()">
               <label class="form-check-label">No</label>
             </div>
           </div>
@@ -78,12 +78,12 @@
                 if (document.getElementById("requiresAccessibility").checked) {
                   document.getElementById("requiresAccessibility").value = true;
                   document.getElementById("accessibilityNeeds").value = "";
-                  document.getElementById("accessibilityNeeds").disabled = false;
+                  document.getElementById("accessibilityNeeds").style.display = "block";
                   document.getElementById("accessibilityNeeds").placeholder="Enter in the special needs required"
                 } else {
                   document.getElementById("requiresAccessibility").value = false
                   document.getElementById("accessibilityNeeds").value = "N/A";
-                  document.getElementById("accessibilityNeeds").disabled = true;
+                  document.getElementById("accessibilityNeeds").style.display = "none";
                 }
               }
 
@@ -91,11 +91,12 @@
                 if (document.getElementById("hasDietaryNeeds").checked) {
                   document.getElementById("hasDietaryNeeds").value = true;
                   document.getElementById("dietaryNeeds").value = "";
-                  document.getElementById("dietaryNeeds").disabled = false;
+                  document.getElementById("dietaryNeeds").placeholder = "Enter in dietary needs";
+                  document.getElementById("dietaryNeeds").style.display = "block";
                 } else {
                   document.getElementById("hasDietaryNeeds").value = false;
                   document.getElementById("dietaryNeeds").value = "N/A";
-                  document.getElementById("dietaryNeeds").disabled = true;
+                  document.getElementById("dietaryNeeds").style.display = "none";
                 }
               }
               </script>

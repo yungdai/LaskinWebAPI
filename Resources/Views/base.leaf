@@ -15,13 +15,13 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item #if(title == "Homepage"){active}">
+        <li class="nav-item #if(title == "HomePage"){active}">
           <a href="/" class="nav-link">Home</a>
         </li>
         <!-- <li class="nav-item #if(title == "All Users"){active}">
           <a href="/" class="nav-link">All Users</a>
         </li> -->
-        <li class="nav-item #if(title == "Create New User"){active}" #if(title == "Laskin Users") {hidden = "false"} else { hidden = "true"} >
+        <li class="nav-item #if(title == "Create New User"){active}">
           <a href="/create-user" class="nav-link">Create New User</a>
         </li>
       </ul>

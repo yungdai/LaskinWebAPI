@@ -195,7 +195,7 @@ struct WebsiteController: RouteCollection {
             
             user.firstName = data.firstName
             user.lastName = data.lastName
-            user.userType = UserType.init(rawValue: data.userType) ?? .none
+            user.userType = data.userType
             user.privileges = data.privileges
             
             if data.privileges == "" {
