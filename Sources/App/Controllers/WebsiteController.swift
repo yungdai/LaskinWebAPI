@@ -159,7 +159,7 @@ struct WebsiteController: RouteCollection {
         return try request.content.decode(UserPostData.self).flatMap(to: Response.self) { data in
             
             // create the user
-            let user = User(firstName: data.firstName, lastName: data.lastName, userType: data.userType, privileges: data.privileges)
+            let user = User(firstName: data.firstName, lastName: data.lastName, userType: data.userType, privileges: data.privileges, password: data.password, userName: data.userName)
             
             // save the user and check the ID to make sure it's saved properly
             return user.save(on: request).map(to: Response.self) { user in
@@ -359,6 +359,8 @@ struct UserPostData: Content {
     let lastName: String
     let userType: String
     let privileges: String
+    let userName: String
+    let password: String
 }
 
 struct MatchMakingDataPostData: Content {

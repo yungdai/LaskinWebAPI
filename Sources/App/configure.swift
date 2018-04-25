@@ -1,6 +1,7 @@
 import FluentPostgreSQL
 import Vapor
 import Leaf
+import Authentication
 
 /// Called before your application initializes.
 ///
@@ -12,7 +13,10 @@ public func configure(
 ) throws {
     /// Register providers first
     try services.register(FluentPostgreSQLProvider())
+    // Added for Leaf Support
     try services.register(LeafProvider())
+    // Added for Authentication Support
+    try services.register(AuthenticationProvider())
 
     /// Register routes to the router
     let router = EngineRouter.default()
@@ -54,6 +58,10 @@ public func configure(
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: UserDetails.self, database: .psql)
     migrations.add(model: MatchMakingData.self, database: .psql)
+    
+    // Add Token for Authentication
+    migrations.add(model: Token.self, database: .psql)
+    
     services.register(migrations)
     
     // Configure the rest of your application here:
@@ -63,5 +71,10 @@ public func configure(
     commandConfig.use(RevertCommand.self, as: "revert")
     // register the commandConfig as a service
     services.register(commandConfig)
-
+    
+    // ADDED FOR AUTHENTICATION:
+    // Make sure the user database is to use the User.Public Database by default
+    User.Public.defaultDatabase = .psql
+    
+    
 }
