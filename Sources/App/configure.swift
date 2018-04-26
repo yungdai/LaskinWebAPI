@@ -1,6 +1,7 @@
 import FluentPostgreSQL
 import Vapor
 import Leaf
+import Authentication
 
 /// Called before your application initializes.
 ///
@@ -12,18 +13,21 @@ public func configure(
 ) throws {
     /// Register providers first
     try services.register(FluentPostgreSQLProvider())
+    // Added for Leaf Support
     try services.register(LeafProvider())
-
-    /// Register routes to the router
-    let router = EngineRouter.default()
-    try routes(router)
-    services.register(router, as: Router.self)
+    // Added for Authentication Support
+    try services.register(AuthenticationProvider())
 
     /// Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(DateMiddleware.self) // Adds `Date` header to responses
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
+    
+    // This middleware adds sessions to the application
+    middlewares.use(SessionsMiddleware.self)
+    
+    // Register all the middleware
     services.register(middlewares)
 
     // Docker command used to create the test database
@@ -54,6 +58,10 @@ public func configure(
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: UserDetails.self, database: .psql)
     migrations.add(model: MatchMakingData.self, database: .psql)
+    
+    // Add Token for Authentication
+    migrations.add(model: Token.self, database: .psql)
+    
     services.register(migrations)
     
     // Configure the rest of your application here:
@@ -63,5 +71,16 @@ public func configure(
     commandConfig.use(RevertCommand.self, as: "revert")
     // register the commandConfig as a service
     services.register(commandConfig)
+    
+    // ADDED FOR AUTHENTICATION:
+    // Make sure the user database is to use the User.Public Database by default
+    User.Public.defaultDatabase = .psql
 
+    // For Authentication, the router must happen AFTER the migrations.
+    /// Register routes to the router
+    let router = EngineRouter.default()
+    try routes(router)
+    services.register(router, as: Router.self)
+    
+    // Configure the rest of the application here
 }

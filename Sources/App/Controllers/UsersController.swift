@@ -1,5 +1,6 @@
 import Vapor
 import FluentPostgreSQL
+import Crypto
 
 struct UsersController: RouteCollection {
     
@@ -8,7 +9,7 @@ struct UsersController: RouteCollection {
         let userRoutes = router.grouped("api", "users")
         userRoutes.post(User.self, use: createHandler)
         userRoutes.get(use: getAllHandler)
-        userRoutes.get(User.parameter, use: getHandler)
+        userRoutes.get(User.Public.parameter, use: getHandler)
         userRoutes.put(User.parameter, use: updateHandler)
         userRoutes.delete(User.parameter, use: deleteHandler)
         userRoutes.get("search", use: searchHandler)
@@ -16,21 +17,35 @@ struct UsersController: RouteCollection {
         userRoutes.get("sort", use: sortHandler)
         userRoutes.get(User.parameter, "userDetails", use: getUserDetailsHandler)
         userRoutes.get(User.parameter, "matchMakingData", use: getMatchMakingDataHandler)
+        
+        // Create the middleware for authentication
+        let basicAuthMiddleWear = User.basicAuthMiddleware(using: BCryptDigest())
+        let basicAuthGroup = userRoutes.grouped(basicAuthMiddleWear)
+        basicAuthGroup.post("login", use: loginHandler)
     }
     
     // CREATE
     func createHandler(_ request: Request, user: User) throws -> Future<User> {
-        return user.save(on: request)
+        
+        return try request.content.decode(User.self).flatMap(to: User.self) { user in
+
+            // To add authentication create hasher
+            // encrypt the user password with the hasher
+            user.password = try request.make(BCryptDigest.self).hash(user.password)
+            
+            return user.save(on: request)
+        }
     }
     
     // GET ALL
-    func getAllHandler(_ request: Request) throws -> Future<[User]> {
-        return User.query(on: request).all()
+    // Changed for authentication
+    func getAllHandler(_ request: Request) throws -> Future<[User.Public]> {
+        return User.Public.query(on: request).all()
     }
     
     // GET by api/users/#id
-    func getHandler(_ request: Request) throws -> Future<User> {
-        return try request.parameters.next(User.self)
+    func getHandler(_ request: Request) throws -> Future<User.Public> {
+        return try request.parameters.next(User.Public.self)
     }
     
     // UPDATE
@@ -75,6 +90,7 @@ struct UsersController: RouteCollection {
             try or.filter(\.lastName == searchTerm)
             try or.filter(\.userType == searchTerm)
             try or.filter(\.privileges == searchTerm)
+            try or.filter(\.userName == searchTerm)
         }.all()
     }
     
@@ -117,4 +133,13 @@ struct UsersController: RouteCollection {
                 try user.matchMakingData.query(on: request).all()
         }
     }
+    
+    // LOGIN Authentication
+    func loginHandler(_ request: Request) throws -> Future<Token> {
+        
+        let user = try request.requireAuthenticated(User.self)
+        let token = try Token.generate(for: user)
+        return token.save(on: request)
+    }
 }
+

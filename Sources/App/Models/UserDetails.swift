@@ -11,8 +11,7 @@ final class UserDetails: Codable {
     var emailAddress: String
     var mobilePhone: String
     var officePhone: String
-    
-    
+
     // accessiblity
     var requiresAccessibility: Bool
     var accessibilityNeeds: String
@@ -35,6 +34,13 @@ final class UserDetails: Codable {
         self.hasDietaryNeeds = hasDietaryNeeds
         self.dietaryNeeds = dietaryNeeds
         self.conflictingSchools = conflictingSchools
+    }
+    
+    static func returnArrayOfConflctingSchools(from stringValue: String) -> [String] {
+        
+        // create an array of conflicting schools from comma delimited values
+        let conflictingSchools = stringValue.components(separatedBy: ",")
+        return conflictingSchools
     }
 }
 

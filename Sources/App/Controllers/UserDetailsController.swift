@@ -4,26 +4,45 @@ import Fluent
 struct UserDetailsController: RouteCollection {
     
     func boot(router: Router) throws {
-        let userDetailsRoutes = router.grouped("api","userDetails")
+        let userDetailsRoute = router.grouped("api","userDetails")
+
+        userDetailsRoute.get(use: getAllHandler)
+        userDetailsRoute.get(UserDetails.parameter, use: getHandler)
+        userDetailsRoute.get("search", use: searchHandler)
         
-        userDetailsRoutes.post(UserDetails.self, use: createHandler)
-        userDetailsRoutes.get(use: getAllHandler)
-        userDetailsRoutes.get(UserDetails.parameter, use: getHandler)
-        userDetailsRoutes.put(UserDetails.parameter, use: updateHandler)
-        userDetailsRoutes.delete(UserDetails.parameter, use: deleteHandler)
-        userDetailsRoutes.get("search", use: searchHandler)
-    }
-    
-    // CREATE
-    func createHandler(_ request: Request, userDetails: UserDetails) throws -> Future<UserDetails> {
-        return userDetails.save(on: request)
+        // Added to allow only authenticated users for these routes
+        // use tokenAuthMiddleWare() to make sure that you're authenticated to use these routes
+        let tokenAuthMiddleWare = User.tokenAuthMiddleware()
+        let tokenAuthGroup = userDetailsRoute.grouped(tokenAuthMiddleWare)
+        
+        // moving the routes for create, update, and delete down to this group
+        // ensure that ONLY authenticated users can be allowed to use the routes
+        tokenAuthGroup.post(use: createHandler)
+        tokenAuthGroup.delete(UserDetails.parameter, use: deleteHandler)
+        tokenAuthGroup.put(UserDetails.parameter, use: updateHandler)
     }
     
     // GET ALL
     func getAllHandler(_ request: Request) throws -> Future<[UserDetails]> {
         return UserDetails.query(on: request).all()
     }
+
     
+    // CREATE, but now used for the tokenAuthGroup
+    func createHandler(_ request: Request) throws -> Future<UserDetails> {
+        
+        return try request.content.decode(UserDetailsCreateData.self).flatMap(to: UserDetails.self) { userDetailsData in
+            
+            // check to make sure the usee is authenticated
+            let user = try request.requireAuthenticated(User.self)
+            
+            // create a user user details the authenticated user.
+            let userDetails = UserDetails(userID: try user.requireID(), emailAddress: userDetailsData.emailAddress, mobilePhone: userDetailsData.mobilePhone, officePhone: userDetailsData.officePhone, requiresAccessibility: userDetailsData.requiresAccessibility, accessibilityNeeds: userDetailsData.accessibilityNeeds, hasDietaryNeeds: userDetailsData.hasDietaryNeeds, dietaryNeeds: userDetailsData.dietaryNeeds, conflictingSchools: UserDetails.returnArrayOfConflctingSchools(from: userDetailsData.conflictingSchools))
+            
+            return userDetails.save(on: request)
+        }
+    }
+
     // GET by api/users/#id
     func getHandler(_ request: Request) throws -> Future<UserDetails> {
         return try request.parameters.next(UserDetails.self)
@@ -33,18 +52,19 @@ struct UserDetailsController: RouteCollection {
     func updateHandler(_ request: Request) throws -> Future<UserDetails> {
         
         // extract the users from the users from user ID at api/user/#user/userDetails/#id
-        return try flatMap(to: UserDetails.self, request.parameters.next(UserDetails.self), request.content.decode(UserDetails.self)) { userDetails, updatedUserDetails in
-            
+        return try flatMap(to: UserDetails.self, request.parameters.next(UserDetails.self), request.content.decode(UserDetailsCreateData.self)) { userDetails, userDetailsCreateData in
+
+
             // update the found user with the updated model and then save
-            userDetails.userID = updatedUserDetails.userID
-            userDetails.emailAddress = updatedUserDetails.emailAddress
-            userDetails.mobilePhone = updatedUserDetails.mobilePhone
-            userDetails.officePhone = updatedUserDetails.officePhone
-            userDetails.requiresAccessibility = updatedUserDetails.requiresAccessibility
-            userDetails.accessibilityNeeds = updatedUserDetails.accessibilityNeeds
-            userDetails.hasDietaryNeeds = updatedUserDetails.hasDietaryNeeds
-            userDetails.dietaryNeeds = updatedUserDetails.dietaryNeeds
-            userDetails.conflictingSchools = updatedUserDetails.conflictingSchools
+            userDetails.emailAddress = userDetailsCreateData.emailAddress
+            userDetails.mobilePhone = userDetailsCreateData.mobilePhone
+            userDetails.officePhone = userDetailsCreateData.officePhone
+            userDetails.requiresAccessibility = userDetailsCreateData.requiresAccessibility
+            userDetails.accessibilityNeeds = userDetailsCreateData.accessibilityNeeds
+            userDetails.hasDietaryNeeds = userDetailsCreateData.hasDietaryNeeds
+            userDetails.dietaryNeeds = userDetailsCreateData.dietaryNeeds
+            userDetails.conflictingSchools = UserDetails.returnArrayOfConflctingSchools(from: userDetailsCreateData.conflictingSchools)
+            userDetails.userID = try request.requireAuthenticated(User.self).requireID()
             
             return userDetails.save(on: request)
         }
@@ -65,9 +85,8 @@ struct UserDetailsController: RouteCollection {
         
         // retrieve the search term from the URL query string.  You can do this with any Codable object by calling request.query.decode(_:).  If there is a failure it will throw a 400 Bad Request Error
         guard let searchTerm = request.query[String.self, at: "term"] else {
-            throw Abort(.badRequest)
+            throw Abort(.badRequest, reason: "Missing search term in request")
         }
-        
 
         return try UserDetails.query(on: request).group(.or) { or in
             
@@ -78,4 +97,16 @@ struct UserDetailsController: RouteCollection {
             try or.filter(\.dietaryNeeds == searchTerm)
             }.all()
     }
+}
+
+struct UserDetailsCreateData: Content {
+    
+    let emailAddress: String
+    let mobilePhone: String
+    let officePhone: String
+    let requiresAccessibility: Bool
+    let accessibilityNeeds: String
+    let hasDietaryNeeds: Bool
+    let dietaryNeeds: String
+    let conflictingSchools: String
 }
