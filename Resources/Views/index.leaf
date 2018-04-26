@@ -1,34 +1,37 @@
 #set("content") {
-  <h1>Laskin Users</h1>
 
-  #if(users) {
-    <table style="width:90%" align="center" class="table table-bordered table-hover">
-      <thread class="thread-light">
-        <tr bgcolor="#aaa">
-          <th>
-            First Name
-          </th>
-          <th>
-            Last name
-          </th>
-          <th>
-            User Type
-          </th>
-          <th>
-            App Privileges
-          </th>
-        </tr>
-      </thread>
-      <tbody>
-        #for(user in users) {
-          <tr><td><a href="/users/#(user.id)">#(user.firstName)<a></td><td>#(user.lastName)</td><td>#(user.userType)</td><td>#(user.privileges)</td></tr>
-          }
-        </tbody>
-      </table>
+  #if(authenticated) {
+    <h1>Laskin Users</h1>
+    #if(users) {
+      <table style="width:90%" align="center" class="table table-bordered table-hover">
+        <thread class="thread-light">
+          <tr bgcolor="#aaa">
+            <th>
+              First Name
+            </th>
+            <th>
+              Last name
+            </th>
+            <th>
+              User Type
+            </th>
+            <th>
+              App Privileges
+            </th>
+          </tr>
+        </thread>
+        <tbody>
+          #for(user in users) {
+            <tr><td><a href="/users/#(user.id)">#(user.firstName)<a></td><td>#(user.lastName)</td><td>#(user.userType)</td><td>#(user.privileges)</td></tr>
+            }
+          </tbody>
+        </table>
+      } else {
+        <h2>There are no users to display!</h2>
+      }
     } else {
-      <h2>There are no users to display!</h2>
+      <h1>Please Login to continue redirect to Log In page</h1>
+      <meta http-equiv="refresh" content ="0; url=/login">
     }
-}
-
-
-#embed("base")
+  }
+  #embed("base")

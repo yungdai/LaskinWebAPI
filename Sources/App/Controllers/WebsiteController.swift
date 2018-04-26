@@ -35,7 +35,7 @@ struct WebsiteController: RouteCollection {
         // You will still need to pass a userID and get the parameter if you want another user.
         
         // set up the main index route
-
+        
         proctectedRoutes.get("users", User.parameter, use: userHandler)
         
         // CREATE USER and POST DATA
@@ -67,14 +67,15 @@ struct WebsiteController: RouteCollection {
         proctectedRoutes.post("users", User.parameter, "matchMakingData", MatchMakingData.parameter, "edit", use: editMatchMakingDataPostHandler)
         
     }
-
+    
     // this is the default where the templates will spawn from
     func indexHandler(_ request: Request) throws -> Future<View> {
-
+        
         // query the database to get all users
         return User.query(on: request).all().flatMap(to: View.self) { users in
             
             let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users, authenticated: try request.isAuthenticated(User.self))
+            
             return try request.leaf().render("index", context)
         }
     }
@@ -91,7 +92,7 @@ struct WebsiteController: RouteCollection {
             }
         }
     }
-
+    
     // router.get("users", User.parameter, "userDetails-create", use: createUserDetailsHandler)
     // CREATE UserDetails handler
     func createUserDetailsHandler(_ request: Request) throws -> Future<View> {
@@ -103,7 +104,7 @@ struct WebsiteController: RouteCollection {
     }
     
     //  router.post("users", User.parameter, "userDetails", "create", use: createUserDetailsPostHandler)
-
+    
     // CREATE UserDetails POST handler
     func createUserDetailsPostHandler(_ request: Request) throws -> Future<Response> {
         
@@ -139,7 +140,7 @@ struct WebsiteController: RouteCollection {
     // Edit UserDetails Handler
     func editUserDetailsHandler(_ request: Request) throws -> Future<View> {
         return try flatMap(to: View.self, request.parameters.next(User.self), request.parameters.next(UserDetails.self)) { user, userDetails in
-    
+            
             let context = EditUserDetailsContext(title: "Edit User Details", userDetails:userDetails, user: user, fullName: user.getFullName())
             return try request.leaf().render("createUserDetails", context)
         }
@@ -150,7 +151,7 @@ struct WebsiteController: RouteCollection {
         
         // retrieve the paramater for the UserData, and decode the post data
         return try flatMap(to: Response.self, request.parameters.next(User.self), request.parameters.next(UserDetails.self), request.content.decode(UserDetailsPostData.self)) { user, userDetails, data in
-
+            
             userDetails.emailAddress = data.emailAddress
             userDetails.mobilePhone = data.mobilePhone
             userDetails.officePhone = data.officePhone
@@ -161,7 +162,7 @@ struct WebsiteController: RouteCollection {
             
             let conflictingSchools = data.conflictingSchools.components(separatedBy: ",")
             userDetails.conflictingSchools = conflictingSchools
-        
+            
             userDetails.userID = user.id!
             
             return userDetails.save(on: request).map(to: Response.self) { userDetails in
@@ -208,7 +209,7 @@ struct WebsiteController: RouteCollection {
     
     // EDIT USER
     func editUserHandler(_ request: Request) throws -> Future<View> {
-
+        
         return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
             let fullName = user.getFullName()
@@ -260,11 +261,11 @@ struct WebsiteController: RouteCollection {
     func createMatchMakingDataPostHandler(_ request: Request) throws -> Future<Response> {
         
         return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(MatchMakingDataPostData.self)) { user, data in
-
+            
             let matchMakingData = MatchMakingData(userID: user.id!, school: data.school, city: data.city, province:data.province, timeZone: TimeZones.timeZoneValue(by: data.timeZone), needsInterpreter: data.needsInterpreter, interpreterType: data.interpreterType, order: Int(data.order) ?? 0, additionalNotes: data.additionalNotes)
             
             return matchMakingData.save(on: request).map(to: Response.self) { matchMakingData in
-             
+                
                 guard let _ = matchMakingData.id else {
                     // something wrong happened, go home
                     return request.redirect(to: "/")
@@ -329,7 +330,7 @@ struct WebsiteController: RouteCollection {
             let verifier = try request.make(BCryptDigest.self)
             return User.authenticate(username: data.userName, password: data.password, using: verifier, on: request).map(to: Response.self) { user in
                 
-            
+                
                 // FAILURE:
                 // TODO: Throw up a real error on the login page
                 guard let user = user else {
@@ -467,7 +468,7 @@ struct EditMatchMakingDataContext: Codable {
     let user: User
     let matchMakingData: MatchMakingData
     let fullName: String
-
+    
     let provinces: [String]
     let timeZones: [String]
     let orders: [String]
