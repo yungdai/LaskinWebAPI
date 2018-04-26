@@ -33,7 +33,7 @@ struct UserDetailsController: RouteCollection {
         
         return try request.content.decode(UserDetailsCreateData.self).flatMap(to: UserDetails.self) { userDetailsData in
             
-            // check to make sure the use is authenticated
+            // check to make sure the usee is authenticated
             let user = try request.requireAuthenticated(User.self)
             
             // create a user user details the authenticated user.

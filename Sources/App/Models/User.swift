@@ -109,3 +109,7 @@ extension User: BasicAuthenticatable {
 extension User: TokenAuthenticatable {
     typealias TokenType = Token
 }
+
+//Add following extensions for Web Authentication
+extension User: PasswordAuthenticatable {}
+extension User: SessionAuthenticatable {}

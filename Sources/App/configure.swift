@@ -23,6 +23,11 @@ public func configure(
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(DateMiddleware.self) // Adds `Date` header to responses
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
+    
+    // This middleware adds sessions to the application
+    middlewares.use(SessionsMiddleware.self)
+    
+    // Register all the middleware
     services.register(middlewares)
 
     // Docker command used to create the test database

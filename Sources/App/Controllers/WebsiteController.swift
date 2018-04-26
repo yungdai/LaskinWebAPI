@@ -1,50 +1,80 @@
 import Vapor
 import Leaf
 import Foundation
+import Authentication
+
+// this is for the Password Encryption
+import Crypto
 
 struct WebsiteController: RouteCollection {
     
     func boot(router: Router) throws {
         
+        // Uncomment this and push to the server when you need to start out and create a new user for administration.
+        //        router.get("create-user", use: createUserHandler)
+        //        router.post("create-user", use: createUserPostHandler)
+        
+        // Web Authentication Route Group ensures that the user must be logged in to use the following routes.
+        let authSessionsRoutes = router.grouped(User.authSessionsMiddleware())
+        
+        // LOGIN Page
+        authSessionsRoutes.get("login", use: loginHandler)
+        // LOGIN Post Data
+        authSessionsRoutes.post("login", use: loginPostHandler)
+        
+        // you can see the users but you cannot do anything until you log in
+        authSessionsRoutes.get(use: indexHandler)
+        
+        // Authentication Middleware to ensure the user is logged in to make sure they don't need to relogin for every page.
+        // REQUIRED: import Authentication
+        // This allows the user to redirect to the login page if you're not already authenticated.
+        let proctectedRoutes = authSessionsRoutes.grouped(RedirectMiddleware<User>(path: "/login"))
+        
+        // NOTE: Any routes here can always get the authenitcation user by doing the following in their route functions:
+        // let user = try request.requiredAuthenticated(User.self) to get the authenticated user
+        // You will still need to pass a userID and get the parameter if you want another user.
+        
         // set up the main index route
-        router.get(use: indexHandler)
-        router.get("users", User.parameter, use: userHandler)
+
+        proctectedRoutes.get("users", User.parameter, use: userHandler)
         
         // CREATE USER and POST DATA
-        router.get("create-user", use: createUserHandler)
-        router.post("create-user", use: createUserPostHandler)
+        proctectedRoutes.get("create-user", use: createUserHandler)
+        proctectedRoutes.post("create-user", use: createUserPostHandler)
+        
         
         // EDIT USER and POST DATA
-        router.get("users", User.parameter, "edit", use: editUserHandler)
-        router.post("users", User.parameter, "edit", use: editUserPostHandler)
+        proctectedRoutes.get("users", User.parameter, "edit", use: editUserHandler)
+        proctectedRoutes.post("users", User.parameter, "edit", use: editUserPostHandler)
         
         // set up creating UserDetails
         // GET the user details page
-        router.get("users", User.parameter, "userDetails-create", use: createUserDetailsHandler)
+        proctectedRoutes.get("users", User.parameter, "userDetails-create", use: createUserDetailsHandler)
         
         // POST the data to save
-        router.post("users", User.parameter, "userDetails-create", use: createUserDetailsPostHandler)
+        proctectedRoutes.post("users", User.parameter, "userDetails-create", use: createUserDetailsPostHandler)
         
         // GET the edit User Details page
-        router.get("users", User.parameter, "userDetails", UserDetails.parameter, "edit", use: editUserDetailsHandler)
-        router.post("users", User.parameter, "userDetails", UserDetails.parameter, "edit", use: editUserDetailsPostHandler)
-
+        proctectedRoutes.get("users", User.parameter, "userDetails", UserDetails.parameter, "edit", use: editUserDetailsHandler)
+        proctectedRoutes.post("users", User.parameter, "userDetails", UserDetails.parameter, "edit", use: editUserDetailsPostHandler)
+        
         // CREATE MatchMakingData
-        router.get("users", User.parameter, "matchMakingData-create", use: createMatchMakingDataHandler)
-        router.post("users", User.parameter, "matchMakingData-create", use: createMatchMakingDataPostHandler)
+        proctectedRoutes.get("users", User.parameter, "matchMakingData-create", use: createMatchMakingDataHandler)
+        proctectedRoutes.post("users", User.parameter, "matchMakingData-create", use: createMatchMakingDataPostHandler)
         
         // EDIT MatchMakingData
-        router.get("users", User.parameter, "matchMakingData", MatchMakingData.parameter, "edit", use: editMatchMakingDataHandler)
-        router.post("users", User.parameter, "matchMakingData", MatchMakingData.parameter, "edit", use: editMatchMakingDataPostHandler)
+        proctectedRoutes.get("users", User.parameter, "matchMakingData", MatchMakingData.parameter, "edit", use: editMatchMakingDataHandler)
+        proctectedRoutes.post("users", User.parameter, "matchMakingData", MatchMakingData.parameter, "edit", use: editMatchMakingDataPostHandler)
+        
     }
 
     // this is the default where the templates will spawn from
     func indexHandler(_ request: Request) throws -> Future<View> {
-        
+
         // query the database to get all users
         return User.query(on: request).all().flatMap(to: View.self) { users in
             
-            let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users)
+            let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users, authenticated: try request.isAuthenticated(User.self))
             return try request.leaf().render("index", context)
         }
     }
@@ -282,6 +312,35 @@ struct WebsiteController: RouteCollection {
             }
         }
     }
+    
+    // LOGIN Handler
+    func loginHandler(_ request: Request) throws -> Future<View> {
+        
+        let context = LoginContext(title: "Log In")
+        return try request.leaf().render("login", context)
+    }
+    
+    func loginPostHandler(_ request: Request) throws -> Future<Response> {
+        
+        // send the data from the form to the decode function
+        return try request.content.decode(LoginPostData.self).flatMap(to: Response.self) { data in
+            
+            // this requires you to import Crypto for password encyption
+            let verifier = try request.make(BCryptDigest.self)
+            return User.authenticate(username: data.userName, password: data.password, using: verifier, on: request).map(to: Response.self) { user in
+                
+            
+                // FAILURE:
+                // TODO: Throw up a real error on the login page
+                guard let user = user else {
+                    return request.redirect(to: "/login")
+                }
+                
+                try request.authenticateSession(user)
+                return request.redirect(to: "/")
+            }
+        }
+    }
 }
 
 extension Request {
@@ -296,6 +355,7 @@ struct IndexContext: Codable {
     
     let title: String
     let users: [User]?
+    let authenticated: Bool
 }
 
 struct UserContext: Codable {
@@ -416,6 +476,18 @@ struct EditMatchMakingDataContext: Codable {
     let editing = true
 }
 
+struct LoginContext: Codable {
+    let title: String
+}
+
+struct LoginPostData: Content {
+    
+    let userName: String
+    let password: String
+}
+
+
+// TODO: Move these enums to where they will make sense
 enum TimeZones: Int, Codable {
     case pacific = 0
     case mountain = 1
