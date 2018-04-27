@@ -23,6 +23,15 @@ public func routes(_ router: Router) throws {
     
     let websiteController = WebsiteController()
     try router.register(collection: websiteController)
+    
+    let userWebsiteController = UserWebsiteController()
+    try router.register(collection: userWebsiteController)
+    
+    let userDetailsWebsiteController = UserDetailsWebsiteController()
+    try router.register(collection: userDetailsWebsiteController)
+    
+    let matchMakingDataWebsiteController = MatchMakingDataWebsiteController()
+    try router.register(collection: matchMakingDataWebsiteController)
 }
 
 
