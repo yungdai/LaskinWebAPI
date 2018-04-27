@@ -1,9 +1,11 @@
 import Vapor
 import Fluent
 
+
 struct UserDetailsController: RouteCollection {
     
     func boot(router: Router) throws {
+        
         let userDetailsRoute = router.grouped("api","userDetails")
 
         userDetailsRoute.get(use: getAllHandler)
@@ -21,19 +23,13 @@ struct UserDetailsController: RouteCollection {
         tokenAuthGroup.delete(UserDetails.parameter, use: deleteHandler)
         tokenAuthGroup.put(UserDetails.parameter, use: updateHandler)
     }
-    
-    // GET ALL
-    func getAllHandler(_ request: Request) throws -> Future<[UserDetails]> {
-        return UserDetails.query(on: request).all()
-    }
 
-    
     // CREATE, but now used for the tokenAuthGroup
     func createHandler(_ request: Request) throws -> Future<UserDetails> {
         
         return try request.content.decode(UserDetailsCreateData.self).flatMap(to: UserDetails.self) { userDetailsData in
             
-            // check to make sure the usee is authenticated
+            // check to make sure the user is authenticated
             let user = try request.requireAuthenticated(User.self)
             
             // create a user user details the authenticated user.
@@ -41,6 +37,11 @@ struct UserDetailsController: RouteCollection {
             
             return userDetails.save(on: request)
         }
+    }
+    
+    // GET ALL
+    func getAllHandler(_ request: Request) throws -> Future<[UserDetails]> {
+        return UserDetails.query(on: request).all()
     }
 
     // GET by api/users/#id
@@ -64,7 +65,9 @@ struct UserDetailsController: RouteCollection {
             userDetails.hasDietaryNeeds = userDetailsCreateData.hasDietaryNeeds
             userDetails.dietaryNeeds = userDetailsCreateData.dietaryNeeds
             userDetails.conflictingSchools = UserDetails.returnArrayOfConflctingSchools(from: userDetailsCreateData.conflictingSchools)
-            userDetails.userID = try request.requireAuthenticated(User.self).requireID()
+            
+            // use this type of request if you want ONLY the user who is authenticated to be able to create this data
+            // userDetails.userID = try request.requireAuthenticated(User.self).requireID()
             
             return userDetails.save(on: request)
         }
