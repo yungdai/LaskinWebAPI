@@ -83,4 +83,6 @@ public func configure(
     services.register(router, as: Router.self)
     
     // Configure the rest of the application here
+
+    config.prefer(DictionaryKeyedCache.self, for: KeyedCache.self)
 }
