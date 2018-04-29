@@ -2,6 +2,7 @@ import Vapor
 import Leaf
 import Foundation
 import Authentication
+import Fluent
 
 // this is for the Password Encryption
 import Crypto
@@ -9,6 +10,9 @@ import Crypto
 struct WebsiteController: RouteCollection {
     
     func boot(router: Router) throws {
+        
+        // public
+        router.get("create-admin", use: createAdminUserHandler)
         
         // Web Authentication Route Group ensures that the user must be logged in to use the following routes.
         let authSessionsRoutes = router.grouped(User.authSessionsMiddleware())
@@ -23,15 +27,34 @@ struct WebsiteController: RouteCollection {
         authSessionsRoutes.get(use: indexHandler)
     }
     
-    // this is the default where the templates will spawn from
+    // Default route where the templates will spawn from
     func indexHandler(_ request: Request) throws -> Future<View> {
         
-        // query the database to get all users
+      // query the database to get all users
         return User.query(on: request).all().flatMap(to: View.self) { users in
             
             let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users, authenticated: try request.isAuthenticated(User.self))
-            
             return try request.leaf().render("index", context)
+        }
+    }
+    
+    // One time use route to create an admin account
+    func createAdminUserHandler(_ request: Request) throws -> Future<Response> {
+
+        return try User.Public.query(on: request).filter(\.userName == "admin").first().map(to: Response.self) { user in
+
+            // if there is no user we will create a new admin user with a password default.
+            guard let user = user else  {
+                
+                let adminUser = User(firstName: "Administrator", lastName: "User", userType: "administrator", privileges: "admin", password: "password", userName: "admin")
+                
+                adminUser.password = try request.make(BCryptDigest.self).hash(adminUser.password)
+                _ = adminUser.save(on: request)
+                print("Saved User")
+                return request.redirect(to: "/login")
+            }
+
+            return request.redirect(to: "/login")
         }
     }
 
@@ -50,7 +73,6 @@ struct WebsiteController: RouteCollection {
             // this requires you to import Crypto for password encyption
             let verifier = try request.make(BCryptDigest.self)
             return User.authenticate(username: data.userName, password: data.password, using: verifier, on: request).map(to: Response.self) { user in
-                
                 
                 // FAILURE:
                 // TODO: Throw up a real error on the login page

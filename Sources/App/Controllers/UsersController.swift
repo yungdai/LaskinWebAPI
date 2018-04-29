@@ -43,6 +43,8 @@ struct UsersController: RouteCollection {
         return User.Public.query(on: request).all()
     }
     
+
+    
     // GET by api/users/#id
     func getHandler(_ request: Request) throws -> Future<User.Public> {
         return try request.parameters.next(User.Public.self)
