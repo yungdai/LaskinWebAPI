@@ -25,6 +25,14 @@ struct WebsiteController: RouteCollection {
         // you can see the users but you cannot do anything until you log in
         // set up the main index route
         authSessionsRoutes.get(use: indexHandler)
+        
+        // Authentication Middleware to ensure the user is logged in to make sure they don't need to relogin for every page.
+        // REQUIRED: import Authentication
+        // This allows the user to redirect to the login page if you're not already authenticated.
+        let proctectedRoutes = authSessionsRoutes.grouped(RedirectMiddleware<User>(path: "/login"))
+        
+        // log out
+        proctectedRoutes.get(User.parameter,"logout", use: logOutHandler)
     }
     
     // Default route where the templates will spawn from
@@ -35,6 +43,16 @@ struct WebsiteController: RouteCollection {
             
             let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users, authenticated: try request.isAuthenticated(User.self))
             return try request.leaf().render("index", context)
+        }
+    }
+    
+    func logOutHandler(_ request: Request) throws -> Future<Response> {
+        
+        return try request.parameters.next(User.self).map(to: Response.self) { user in
+      
+            try request.unauthenticate(User.self)
+            
+            return request.redirect(to: "/")
         }
     }
     

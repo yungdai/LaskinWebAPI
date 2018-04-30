@@ -59,12 +59,15 @@ struct UserWebsiteController: RouteCollection {
     }
     
     // CREATE POST USER
-    func createUserPostHandler(_ request: Request) throws ->Future<Response> {
+    func createUserPostHandler(_ request: Request) throws -> Future<Response> {
         
         return try request.content.decode(UserPostData.self).flatMap(to: Response.self) { data in
             
             // create the user
-            let user = User(firstName: data.firstName, lastName: data.lastName, userType: data.userType, privileges: data.privileges, password: data.password, userName: data.userName)
+            // To add authentication create hasher
+            // encrypt the user password with the hasher
+            let password = try request.make(BCryptDigest.self).hash(data.password)
+            let user = User(firstName: data.firstName, lastName: data.lastName, userType: data.userType, privileges: data.privileges, password: password, userName: data.userName)
             
             // save the user and check the ID to make sure it's saved properly
             return user.save(on: request).map(to: Response.self) { user in
@@ -87,6 +90,7 @@ struct UserWebsiteController: RouteCollection {
         return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
             let fullName = user.getFullName()
+
             let context = EditUserContext(title: "Edit User: \(fullName) ", user: user, fullName: fullName, userTypes: User.getUserTypes(), userPrivileges: User.getPrivileges())
             
             return try request.leaf().render("createUser", context)
@@ -96,23 +100,42 @@ struct UserWebsiteController: RouteCollection {
     // EDIT USER POST Handler
     func editUserPostHandler(_ request: Request) throws -> Future<Response> {
         
-        return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(UserPostData.self)) { user, data in
+        return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(EditUserPostData.self)) { user, data in
             
             user.firstName = data.firstName
             user.lastName = data.lastName
             user.userType = data.userType
             user.privileges = data.privileges
             
+            var passwordValidated: Bool = true
+            
+            if (data.newPassword != "" && data.confirmPassword != "") {
+                if (try BCrypt.verify(data.password, created: user.password) && data.newPassword == data.confirmPassword) {
+                    
+                    let password = try request.make(BCryptDigest.self).hash(data.newPassword)
+                    
+                    user.password = password
+                    passwordValidated = true
+            
+                } else {
+                   passwordValidated = false
+                }
+            }
+     
             if data.privileges == "" {
                 user.privileges = "none"
             }
             
             return user.save(on: request).map(to: Response.self) { user in
-                
+
                 guard let id = user.id else {
                     
                     // failure
                     return request.redirect(to: "/")
+                }
+                
+                if !passwordValidated {
+                    return request.redirect(to: "/users/\(id)/edit")
                 }
                 
                 // success!
@@ -149,6 +172,20 @@ struct UserPostData: Content {
     let privileges: String
     let userName: String
     let password: String
+}
+
+struct EditUserPostData: Content {
+    
+    static var defaultMediaType = MediaType.urlEncodedForm
+    
+    let firstName: String
+    let lastName: String
+    let userType: String
+    let privileges: String
+    let userName: String
+    let password: String
+    let newPassword: String
+    let confirmPassword: String
 }
 
 // EDIT User struct
