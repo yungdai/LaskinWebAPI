@@ -33,7 +33,6 @@ final class User: Codable {
         self.privileges = privileges
         self.password = password
         self.userName = userName
-        
     }
     
     func getFullName() -> String {
@@ -58,12 +57,14 @@ final class User: Codable {
     final class Public: Codable {
         
         var id: UUID?
-        var name: String
         var userName: String
+        var firstName: String
+        var lastName: String
         
-        init(name: String, userName: String) {
+        init(userName: String, firstName: String, lastName: String) {
             
-            self.name = name
+            self.firstName = firstName
+            self.lastName = lastName
             self.userName = userName
         }
     }

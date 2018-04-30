@@ -34,7 +34,7 @@ public func configure(
     // docker run --name laskindb -e POSTGRES_DB=vapor -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=laskinAdmin -p 5432:5432 -d postgres
     
     /// Configure PostgreSQL Database
-    var databases = DatabaseConfig()
+    var databases = DatabasesConfig()
     
     // fetch environement variables set by Vapor Cloud.  If it's nil return the coalescing values
     let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
@@ -83,4 +83,5 @@ public func configure(
     services.register(router, as: Router.self)
     
     // Configure the rest of the application here
+    config.prefer(DictionaryKeyedCache.self, for: KeyedCache.self)
 }

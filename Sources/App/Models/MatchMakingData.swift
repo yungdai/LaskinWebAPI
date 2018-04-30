@@ -19,7 +19,6 @@ final class MatchMakingData: Codable {
     var order: Int
     
     // Additional Notes for expansion:
-    
     var additionalNotes: String
     
     init(userID: User.ID, school: String = "N/A", city: String = "N/A", province: String = "N/A", timeZone: Int = 0, needsInterpreter: Bool = false, interpreterType: String = "None", order: Int = 9, additionalNotes: String) {
