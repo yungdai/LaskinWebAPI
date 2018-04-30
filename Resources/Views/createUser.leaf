@@ -41,29 +41,26 @@
           </div>
 
           <div class="form-group col-md-6">
-            <label for="password">#if(editing){Old Password} else {Password}</label>
-            <input type="password" name="password" class="form-control" id="password" placeholder="#if(editing) {Enter Old Password} else {Enter Password}">
+            <label for="password">#if(editing){Current Password} else {Password}</label>
+            <input type="password" name="password" class="form-control" id="password" placeholder="#if(editing) {Enter Password to save changes} else {Enter Password}" oninput="validateNewPassword()">
           </div>
 
-          #if(editing == nil) {
+          #if(editing) {
             <div class="form-group col-md-6">
-              <label for="password">Confirm Password</label>
-              <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Re-enter Password to Confirm" onchange="validateNewPassword()">
+              <label for="newPassword">New Password</label>
+              <input type="password" name="newPassword" class="form-control" id="newPassword" placeholder="Enter a new password">
             </div>
           }
-         #if(editing) {
-           <div class="form-group col-md-6">
-             <label for="newPassword">New Password</label>
-             <input type="password" name="newPassword" class="form-control" id="newPassword" placeholder="Enter a new password">
-           </div>
 
-           <div class="form-group col-md-6">
-             <label for="confirmPassword">Confirm Password</label>
-             <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Re-enter Password to Confirm">
-           </div>
-         }
-          <p></p>
-          <button type="submit" class="btn btn-primary" align-="center" id="submit_button" hidden>#if(editing){Update} else {Submit}</button>
+            <div class="form-group col-md-6">
+              <label for="password">Confirm Password</label>
+              <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Re-enter Password to Confirm" oninput="#if(editing) {changePassword()} else {validateNewPassword()}">
+              <p></p>
+              <button type="submit" class="btn btn-primary" align="center" id="submit_button" disabled>#if(editing){Update} else {Submit}</button> <button type="reset" class="btn btn-primary" align="center" href="/">Reset</button>
+
+            </div>
+
+
         </form>
       </div>
     }
@@ -72,11 +69,28 @@
 
 
     function validateNewPassword() {
-      if  (document.getElementById("password").value != document.getElementById("confirmPassword").value) {
-        document.getElementById("submit_button").hidden = true;
+
+      if (document.getElementById("password").value == "" || document.getElementById("confirmPassword").value == "") {
+        document.getElementById("submit_button").disabled = true;
+
+      } else {
+        if (document.getElementById("password").value != document.getElementById("confirmPassword").value) {
+
+          document.getElementById("submit_button").disabled = true;
+        } else {
+
+          document.getElementById("submit_button").disabled = false;
+        }
+      }
+    }
+
+    function changePassword() {
+      if (document.getElementById("newPassword").value != document.getElementById("confirmPassword").value) {
+
+        document.getElementById("submit_button").disabled = true;
       } else {
 
-        document.getElementById("submit_button").hidden = false;
+        document.getElementById("submit_button").disabled = false;
       }
     }
 

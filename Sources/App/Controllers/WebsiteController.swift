@@ -40,8 +40,10 @@ struct WebsiteController: RouteCollection {
         
       // query the database to get all users
         return User.query(on: request).all().flatMap(to: View.self) { users in
+
+            let currentUser = try request.authenticated(User.self)
+            let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users, authenticatedUser: currentUser)
             
-            let context = IndexContext(title: "HomePage", users: users.isEmpty ? nil : users, authenticated: try request.isAuthenticated(User.self))
             return try request.leaf().render("index", context)
         }
     }
@@ -50,7 +52,7 @@ struct WebsiteController: RouteCollection {
         
         return try request.parameters.next(User.self).map(to: Response.self) { user in
       
-            try request.unauthenticate(User.self)
+            try request.unauthenticateSession(User.self)
             
             return request.redirect(to: "/")
         }
@@ -117,7 +119,7 @@ struct IndexContext: Codable {
     
     let title: String
     let users: [User]?
-    let authenticated: Bool
+    let authenticatedUser: User?
 }
 
 
