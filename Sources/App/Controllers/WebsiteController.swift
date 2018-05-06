@@ -64,7 +64,7 @@ struct WebsiteController: RouteCollection {
         return try User.Public.query(on: request).filter(\.userName == "admin").first().map(to: Response.self) { user in
 
             // if there is no user we will create a new admin user with a password default.
-            guard let user = user else  {
+            guard let _ = user else  {
                 
                 let adminUser = User(firstName: "Administrator", lastName: "User", userType: "administrator", privileges: "admin", password: "password", userName: "admin")
                 
