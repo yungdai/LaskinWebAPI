@@ -34,6 +34,9 @@ struct UserWebsiteController: RouteCollection {
         // EDIT USER and POST DATA
         proctectedRoutes.get("users", User.parameter, "edit", use: editUserHandler)
         proctectedRoutes.post("users", User.parameter, "edit", use: editUserPostHandler)
+        
+        // DELETE User
+        proctectedRoutes.post("users", User.parameter, "delete", use: deleteUserHandler)
     }
     
     // return the user page
@@ -140,6 +143,34 @@ struct UserWebsiteController: RouteCollection {
                 
                 // success!
                 return request.redirect(to: "/users/\(id)")
+            }
+        }
+    }
+    
+    // DELETE User
+    func deleteUserHandler(_ request: Request) throws -> Future<Response> {
+        
+        // extract the user from the user parameter and calls delete on the user
+        return try request.parameters.next(User.self).flatMap(to: Response.self) { user in
+ 
+            return try flatMap(to: Response.self, user.userDetails.query(on: request).first(), user.matchMakingData.query(on: request).first()) { userDetails, matchMakingData in
+                
+                // get the full name of the user
+                let fullName = user.getFullName()
+                
+                // if there are user details remove it and the association
+                if let details = userDetails {
+                    let deleted = details.delete(on: request)
+                    print("deleted user Data for \(fullName): \(deleted)")
+                }
+                
+                // remove the match making data if it's available
+                if let matchMaking = matchMakingData {
+                    let deleted = matchMaking.delete(on: request)
+                    print("deleted match making data for \(fullName): \(deleted)")
+                }
+                
+                return user.delete(on: request).transform(to: request.redirect(to: "/"))
             }
         }
     }

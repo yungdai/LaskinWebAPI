@@ -120,7 +120,7 @@ struct UsersController: RouteCollection {
  
     // GET UserDetails for User
     func getUserDetailsHandler(_ request: Request) throws -> Future<[UserDetails]> {
-        //  Feth the user specified in the request's paramaters and unwarp the returned future.
+        //  Fetch the user specified in the request's paramaters and unwarp the returned future.
         return try request.parameters.next(User.self)
             .flatMap(to: [UserDetails].self) { user in
                 try user.userDetails.query(on: request).all()
