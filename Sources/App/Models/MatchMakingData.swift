@@ -63,3 +63,4 @@ extension MatchMakingData: Migration {
         }
     }
 }
+

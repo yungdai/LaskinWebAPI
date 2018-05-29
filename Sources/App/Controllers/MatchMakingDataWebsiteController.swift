@@ -21,8 +21,8 @@ struct MatchMakingDataWebsiteController: RouteCollection {
         // You will still need to pass a userID and get the parameter if you want another user.
         
         // CREATE MatchMakingData
-        proctectedRoutes.get("users", User.parameter, "matchMakingData-create", use: createMatchMakingDataHandler)
-        proctectedRoutes.post("users", User.parameter, "matchMakingData-create", use: createMatchMakingDataPostHandler)
+        proctectedRoutes.get("users", User.parameter, "matchMakingData","create", use: createMatchMakingDataHandler)
+        proctectedRoutes.post("users", User.parameter, "matchMakingData", "create", use: createMatchMakingDataPostHandler)
         
         // EDIT MatchMakingData
         proctectedRoutes.get("users", User.parameter, "matchMakingData", MatchMakingData.parameter, "edit", use: editMatchMakingDataHandler)
@@ -35,7 +35,9 @@ struct MatchMakingDataWebsiteController: RouteCollection {
         return try request.parameters.next(User.self).flatMap(to: View.self) { user in
             
             let fullName = user.getFullName()
-            let context = CreateMatchMakingDataContext(title: "Create Match Making Data for \(fullName)", user: user, fullName: fullName, provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones(), orders:["1", "2"], interpreters: ["English", "French", "None"])
+            
+            let context = CreateMatchMakingDataContext(title: "Create Match Making Data for \(fullName)", user: user, fullName: fullName, schools: SchoolName.getSchools(), provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones(), orders:["1", "2"], interpreters: ["English", "French", "None"])
+            
             return try request.leaf().render("createMatchMakingData", context)
         }
     }
@@ -43,6 +45,7 @@ struct MatchMakingDataWebsiteController: RouteCollection {
     func createMatchMakingDataPostHandler(_ request: Request) throws -> Future<Response> {
         
         return try flatMap(to: Response.self, request.parameters.next(User.self), request.content.decode(MatchMakingDataPostData.self)) { user, data in
+
             
             let matchMakingData = MatchMakingData(userID: user.id!, school: data.school, city: data.city, province:data.province, timeZone: TimeZones.timeZoneValue(by: data.timeZone), needsInterpreter: data.needsInterpreter, interpreterType: data.interpreterType, order: Int(data.order) ?? 0, additionalNotes: data.additionalNotes)
             
@@ -63,7 +66,7 @@ struct MatchMakingDataWebsiteController: RouteCollection {
         return try flatMap(to: View.self, request.parameters.next(User.self), request.parameters.next(MatchMakingData.self)) { user, matchMakingData in
             
             let fullName = user.getFullName()
-            let context = EditMatchMakingDataContext(title: "Edit Match Making Data for \(fullName)", user: user, matchMakingData: matchMakingData, fullName: fullName, provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones(), orders:["1", "2"], interpreters: ["English", "French", "None"])
+            let context = EditMatchMakingDataContext(title: "Edit Match Making Data for \(fullName)", user: user, matchMakingData: matchMakingData, fullName: fullName, schools: SchoolName.getSchools(), provinces: Province.getProvinces(), timeZones: TimeZones.getTimeZones(), orders:["1", "2"], interpreters: ["English", "French", "None"])
             return try request.leaf().render("createMatchMakingData", context)
         }
     }
@@ -95,7 +98,6 @@ struct MatchMakingDataWebsiteController: RouteCollection {
             }
         }
     }
-    
 }
 
 struct CreateMatchMakingDataContext: Codable {
@@ -104,6 +106,7 @@ struct CreateMatchMakingDataContext: Codable {
     let user: User
     let fullName: String
     
+    let schools: [SchoolData]
     let provinces: [String]
     let timeZones: [String]
     let orders: [String]
@@ -132,10 +135,19 @@ struct EditMatchMakingDataContext: Codable {
     let matchMakingData: MatchMakingData
     let fullName: String
     
+    let schools: [SchoolData]
     let provinces: [String]
     let timeZones: [String]
     let orders: [String]
     let interpreters: [String]
     
     let editing = true
+}
+
+struct SchoolData: Codable {
+    
+    let name: String
+    let city: String
+    let province: String
+    let timeZone: String
 }

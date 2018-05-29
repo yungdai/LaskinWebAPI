@@ -2,6 +2,7 @@
   <body>
     <h1 align="center">#(fullName)</h1>
     <h3 align="center">#(user.userType)</h3>
+    <h3 aligh="center" name="errorText"></h3>
 
     #if(user) {
       <table style="width:90%" align="center" class="table table-bordered table-hover">
@@ -130,25 +131,25 @@
     }
 
     <div style="width:90%" align="center">
-      <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
+      <form method="post" action="/users/#(user.id)/delete">
 
-      #if(userDetails) {
+        #if(userDetails) {
           <a href="/users/#(user.id)/userDetails/#(userDetails.id)/edit" class="btn btn-primary" role="button">Edit User Details</a>
-      } else {
-        <a href="/users/#(user.id)/userDetails-create" class="btn btn-primary" role="button">Add User Details</a>
-      }
-
-      #if(user.userType == "mooter") {
-        #if(matchMakingData) {
-          <a href="/users/#(user.id)/matchMakingData/#(matchMakingData.id)/edit" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Edit Match Making Data</a>
         } else {
-          <a href="/users/#(user.id)/matchMakingData-create" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Add Match Making Data</a>
+          <a href="/users/#(user.id)/userDetails-create" class="btn btn-primary" role="button">Add User Details</a>
         }
-      }
+
+        #if(user.userType == "mooter") {
+          #if(matchMakingData) {
+            <a href="/users/#(user.id)/matchMakingData/#(matchMakingData.id)/edit" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Edit Match Making Data</a>
+          } else {
+            <a href="/users/#(user.id)/matchMakingData/create" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Add Match Making Data</a>
+          }
+        }
+        <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
+        <input class="btn btn-danger" type="submit" value="Delete"/>
+      </form>
     </div>
-    <!-- <p>
-    Create by #(creator.name)
-  </p> -->
 }
 
 #embed("base")
