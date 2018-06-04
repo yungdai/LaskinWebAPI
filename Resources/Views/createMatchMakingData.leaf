@@ -2,28 +2,29 @@
   <h2>#if(editing){Update Match Making Data For: #(fullName)} else {Create New Match Making Data for: #(fullName) } </h1>
 
     <form method="post">
+      #if(user.userType == "mooter") {
       <div class="form-group row col-md-6">
         <label for="school" class="col-sm-1 col-form-label">School</label>
-        <select name="school" id="school" class="form-control">
+        <select name="school" id="school" class="form-control" onload="updateInformation()" onchange="updateInformation()">
           #for(school in schools) {
-            <option #if(editing){value="#(matchMakingData.school)"} else { value="#(school.name)"} onchange="updateInformation(#(school.city), #(school.province), #(school.timeZone))">
+            <option class="options" #if(editing){value="#(matchMakingData.school)"} else { value="#(school.name)" }>
               #(school.name)
             </option>
           }
         </select>
       </div>
-
+    }
       <div class="form-group row">
         <div class="form-group col-md-3">
           <lable for=city class="col-sm-1 col-form-label">City</label>
-            <input type="text" name="city" class="form-control" id="city" placeholder="City Name" #if(editing){value="#(matchMakingData.city)"}>
+            <input type="text" name="city" class="form-control" id="city" placeholder="City Name" #if(editing){value="#(matchMakingData.city)"} #if(user.userType == "mooter") {value="Alberta"}>
           </div>
 
           <div class="form-group col-md-3">
             <lable for=province class="col-sm-1 col-form-label">Province</label>
               <select name="province" class="form-control" id="province">
                 #for(province in provinces) {
-                  <option value="#(province)" #if(editing){#if(matchMakingData.province == province){selected}}>
+                  <option value="#(province)" #if(editing){#if(matchMakingData.province == province){selected} }>
                     #(province)
                   </option>
                 }
@@ -43,7 +44,9 @@
             </div>
 
             <div class="form-group col-md-6">
-              <label for=needsInterpreter>Needs Intepreter?</label>
+              <label for=needsInterpreter>
+                Needs Intepreter?
+              </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="needsInterpreter" id="needsInterpreter" value="true" onclick="toggleInterpreter()" #if(editing){ #if(matchMakingData.needsInterpreter == true) { checked="checked" }}>
                 <label class="form-check-label">Yes</label>
@@ -52,66 +55,77 @@
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="needsInterpreter" id="needsInterpreter" value="false" onclick="toggleInterpreter()" #if(editing){
                   #if(matchMakingData.needsInterpreter == false) { checked="checked" }} >
-                  <label class="form-check-label">No</label>
+                  <label class="form-check-label">
+                    No
+                  </label>
                 </div>
               </div>
 
               <div class="form-group col-md-6" id="interpreterType">
-                <lable for=interpreterType id="interperterLabel">Interpreter Type</label>
-                  <select name="interpreterType" class="form-control" id="interpreterType">
-                    #for(interpreter in interpreters) {
-                      <option value="#(interpreter)" #if(editing){#if(matchMakingData.interpreter == interpreter){selected}}>
-                        #(interpreter)
+                <lable for=interpreterType id="interperterLabel">
+                  Interpreter Type
+                </label>
+                <select name="interpreterType" class="form-control" id="interpreterType">
+                  #for(interpreter in interpreters) {
+                    <option value="#(interpreter)" #if(editing){#if(matchMakingData.interpreter == interpreter){selected}}>
+                      #(interpreter)
+                    }
+                  </select>
+                </div>
+
+                <div class="form-group col-md-6" >
+                  <lable for=order>Order</label>
+                    <select name="order" class="form-control" id="order">
+                      #for(order in orders) {
+                        <option value="#(order)" #if(editing){#if(matchMakingData.order == order){selected}}>
+                          #(order)
+                        </option>
                       }
                     </select>
                   </div>
 
-                  <div class="form-group col-md-6" >
-                    <lable for=order>Order</label>
-                      <select name="order" class="form-control" id="order">
-                        #for(order in orders) {
-                          <option value="#(order)" #if(editing){#if(matchMakingData.order == order){selected}}>
-                            #(order)
-                          </option>
-                        }
-                      </select>
-                    </div>
+                  <div class="form-group col-md-6">
+                    <label for=additionalNotes>Additional Notes</label>
+                    <input type="text" name="additionalNotes" class="form-control" id="additionalNotes" placeholder="Enter in any other additional notes here" #if(editing){value="#(matchMakingData.additionalNotes)"} value="N/A">
+                    <p></p>
+                    <button type="submit" class="btn btn-primary" align-="center">#if(editing){Update} else {Submit}</button>
+                  </div>
 
-                    <div class="form-group col-md-6">
-                      <label for=additionalNotes>Additional Notes</label>
-                      <input type="text" name="additionalNotes" class="form-control" id="additionalNotes" placeholder="Enter in any other additional notes here" #if(editing){value="#(matchMakingData.additionalNotes)"} value="N/A">
-                      <p></p>
-                      <button type="submit" class="btn btn-primary" align-="center">#if(editing){Update} else {Submit}</button>
-                    </div>
+                  <div class="form-group">
+                    <label for="creator">Match Making Data Assigned to: #(fullName)</label>
+                  </div>
+                </form>
+              }
+              #embed("base")
 
-                    <div class="form-group">
-                      <label for="creator">Match Making Data Assigned to: #(fullName)</label>
-                    </div>
-                  </form>
+              <script type="text/javascript" src="/JSON/schools.json"></script>
+              <script type="text/javascript">
+              function updateInformation() {
+
+                var selectedSchool = document.getElementById("school").value;
+
+                // Get the Object from the json file
+                var school = schools.data[selectedSchool];
+
+                document.getElementById("city").value = school.city;
+                document.getElementById("province").value = school.province;
+                document.getElementById("timeZone").value = school.timeZone;
+              }
+
+              function toggleInterpreter() {
+
+                if (document.getElementById("needsInterpreter").checked) {
+                  document.getElementById("needsInterpreter").value = true;
+                  document.getElementById("interpreterType").value = "";
+                  document.getElementById("interpreterType").disabled = false;
+                  document.getElementById("interpreterType").style.display = "block";
+                  document.getElementById("interperterLabel").style.display = "block";
+                } else {
+                  document.getElementById("needsInterpreter").value = false;
+                  document.getElementById("interpreterType").value = "None";
+                  document.getElementById("interpreterType").disabled = true;
+                  document.getElementById("interpreterType").style.display = "none";
+                  document.getElementById("interperterLabel").style.display = "none";
                 }
-                #embed("base")
-                <script type="text/javascript">
-
-                function toggleInterpreter() {
-                  if (document.getElementById("needsInterpreter").checked) {
-                    document.getElementById("needsInterpreter").value = true;
-                    document.getElementById("interpreterType").value = "";
-                    document.getElementById("interpreterType").disabled = false;
-                    document.getElementById("interpreterType").style.display = "block";
-                    document.getElementById("interperterLabel").style.display = "block";
-                  } else {
-                    document.getElementById("needsInterpreter").value = false
-                    document.getElementById("interpreterType").value = "None";
-                    document.getElementById("interpreterType").disabled = true;
-                    document.getElementById("interpreterType").style.display = "none";
-                    document.getElementById("interperterLabel").style.display = "none";
-
-                  }
-                }
-
-                function updateInformation(city, province, timeZone) {
-                  document.getElementById("city").value = city;
-                  document.getElementById("province").value = province;
-                  document.getElementById("timeZone").value = timeZone;
-                }
-                </script>
+              }
+              </script>

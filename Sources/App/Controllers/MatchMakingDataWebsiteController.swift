@@ -105,7 +105,7 @@ struct CreateMatchMakingDataContext: Codable {
     let title: String
     let user: User
     let fullName: String
-    
+
     let schools: [SchoolData]
     let provinces: [String]
     let timeZones: [String]
@@ -150,4 +150,11 @@ struct SchoolData: Codable {
     let city: String
     let province: String
     let timeZone: String
+ 
+    init(name: String = "", city: String = "", province: String = "", timeZone: String = "") {
+        self.name = name
+        self.city = city
+        self.province = province
+        self.timeZone = timeZone
+    }
 }

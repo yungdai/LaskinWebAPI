@@ -139,6 +139,7 @@
           <a href="/users/#(user.id)/userDetails-create" class="btn btn-primary" role="button">Add User Details</a>
         }
 
+        <!-- only display if you're a mooter -->
         #if(user.userType == "mooter") {
           #if(matchMakingData) {
             <a href="/users/#(user.id)/matchMakingData/#(matchMakingData.id)/edit" class="btn btn-primary" role="button" #if(user.userType != "mooter") {hidden}>Edit Match Making Data</a>
@@ -147,7 +148,12 @@
           }
         }
         <a href="/users/#(user.id)/edit" class="btn btn-primary" role="button">Edit User</a>
-        <input class="btn btn-danger" type="submit" value="Delete"/>
+
+        <!-- make sure you cannot delete the admin account -->
+        #if(user.userType != "administrator") {
+          <input class="btn btn-danger" type="submit" value="Delete"/>
+        }
+
       </form>
     </div>
 }

@@ -233,7 +233,7 @@ public enum SchoolName: String, StringRepresentableEnum, Codable {
  
     static func getSchools() -> [SchoolData] {
         
-        let alberta = SchoolData(name: "Alberta", city: "Edmonton", province:  "Edmonton", timeZone: "Mountain")
+        let alberta = SchoolData(name: "Alberta", city: "Edmonton", province:  "Alberta", timeZone: "Mountain")
         let dalhousie = SchoolData(name: "Dalhousie", city: "Halifax", province: "Nova Scotia", timeZone: "Atlantic")
         let laval = SchoolData(name: "Laval", city: "Montréal", province: "Quebec", timeZone: "Eastern")
         let manitoba = SchoolData(name: "Manitoba", city: "Winnipeg", province: "Manitoba", timeZone: "Central")
