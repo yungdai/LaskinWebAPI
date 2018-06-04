@@ -1,0 +1,132 @@
+[{
+  "school": [
+    {
+      "Alberta": [
+        {
+          "city": "Edmonton",
+          "province": "Alberta",
+          "timeZone": "Mountain"
+        }
+      ],
+      "Dalhousie": [
+        {
+          "city": "Halifax",
+          "province": "Nova Scotia",
+          "timeZone": "Atlantic"
+        }
+      ],
+      "Laval": [
+        {
+          "city": "Montréal",
+          "province": "Quebec",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Manitoba": [
+        {
+          "city": "Winnipeg",
+          "province": "Manitoba",
+          "timeZone": "Central"
+        }
+      ],
+      "McGill": [
+        {
+          "city": "Montréal",
+          "province": "Quebec",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Moncton": [
+        {
+          "city": "Moncton",
+          "province": "New Brunswick",
+          "timeZone": "Atlantic"
+        }
+      ],
+      "Montréal": [
+        {
+          "city": "Montréal",
+          "province": "Quebec",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Osgoode": [
+        {
+          "city": "Toronto",
+          "province": "Ontario",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Ottawa": [
+        {
+          "city": "Ottawa",
+          "province": "Ontario",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Queen's": [
+        {
+          "city": "Kingston",
+          "province": "Ontario",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Saskatchewan": [
+        {
+          "city": "Saskatoon",
+          "province": "Saskatchewan",
+          "timeZone": "Central"
+        }
+      ],
+      "Sherbrooke": [
+        {
+          "city": "Sherbrooke",
+          "province": "Quebec",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Toronto": [
+        {
+          "city": "Toronto",
+          "province": "Ontario",
+          "timeZone": "Eastern"
+        }
+      ],
+      "UBC": [
+        {
+          "city": "Vancouver",
+          "province": "British Columbia",
+          "timeZone": "Pacific"
+        }
+      ],
+      "UNB": [
+        {
+          "city": "Fredericton",
+          "province": "New Brunswick",
+          "timeZone": "Pacific"
+        }
+      ],
+      "UQAM": [
+        {
+          "city": "Montréal",
+          "province": "Quebec",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Western": [
+        {
+          "city": "London",
+          "province": "Ontario",
+          "timeZone": "Eastern"
+        }
+      ],
+      "Windsor": [
+        {
+          "city": "Windsor",
+          "province": "Ontario",
+          "timeZone": "Eastern"
+        }
+      ]
+    }
+  ]
+}]
