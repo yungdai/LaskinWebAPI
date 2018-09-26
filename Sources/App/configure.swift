@@ -61,6 +61,9 @@ public func configure(
     
     // Add Token for Authentication
     migrations.add(model: Token.self, database: .psql)
+	
+	// Add an AdminUser so that app executes the migration a the next time the app is launched
+	migrations.add(migration: AdminUser.self, database: .psql)
     
     services.register(migrations)
     

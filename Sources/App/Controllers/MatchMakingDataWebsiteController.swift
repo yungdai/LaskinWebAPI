@@ -9,12 +9,14 @@ struct MatchMakingDataWebsiteController: RouteCollection {
     func boot(router: Router) throws {
         
         // Web Authentication Route Group ensures that the user must be logged in to use the following routes.
-        let authSessionsRoutes = router.grouped(User.authSessionsMiddleware())
+		let tokenAuthMiddleWare = User.tokenAuthMiddleware()
+		let guardAuthMiddleware = User.guardAuthMiddleware()
+        let tokenAuthGroup = router.grouped(tokenAuthMiddleWare, guardAuthMiddleware)
         
         // Authentication Middleware to ensure the user is logged in to make sure they don't need to relogin for every page.
         // REQUIRED: import Authentication
         // This allows the user to redirect to the login page if you're not already authenticated.
-        let proctectedRoutes = authSessionsRoutes.grouped(RedirectMiddleware<User>(path: "/login"))
+        let proctectedRoutes = tokenAuthGroup.grouped(RedirectMiddleware<User>(path: "/login"))
         
         // NOTE: Any routes here can always get the authenitcation user by doing the following in their route functions:
         // let user = try request.requiredAuthenticated(User.self) to get the authenticated user

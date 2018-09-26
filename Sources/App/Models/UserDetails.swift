@@ -71,7 +71,7 @@ extension UserDetails: Migration{
             try addProperties(to: builder)
             
             // add reference between the userID propery on UserDetails and the id properly on the User
-            try builder.addReference(from: \.userID, to: \User.id)
+            builder.reference(from: \.userID, to: \User.id)
         }
     }
 }

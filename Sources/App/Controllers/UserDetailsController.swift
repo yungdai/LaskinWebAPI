@@ -14,8 +14,9 @@ struct UserDetailsController: RouteCollection {
         
         // Added to allow only authenticated users for these routes
         // use tokenAuthMiddleWare() to make sure that you're authenticated to use these routes
-        let tokenAuthMiddleWare = User.tokenAuthMiddleware()
-        let tokenAuthGroup = userDetailsRoute.grouped(tokenAuthMiddleWare)
+		let tokenAuthMiddleWare = User.tokenAuthMiddleware()
+		let guardAuthMiddleware = User.guardAuthMiddleware()
+        let tokenAuthGroup = userDetailsRoute.grouped(tokenAuthMiddleWare, guardAuthMiddleware)
         
         // moving the routes for create, update, and delete down to this group
         // ensure that ONLY authenticated users can be allowed to use the routes
@@ -91,13 +92,13 @@ struct UserDetailsController: RouteCollection {
             throw Abort(.badRequest, reason: "Missing search term in request")
         }
 
-        return try UserDetails.query(on: request).group(.or) { or in
+        return UserDetails.query(on: request).group(.or) { or in
             
-            try or.filter(\.emailAddress == searchTerm)
-            try or.filter(\.mobilePhone == searchTerm)
-            try or.filter(\.officePhone == searchTerm)
-            try or.filter(\.accessibilityNeeds == searchTerm)
-            try or.filter(\.dietaryNeeds == searchTerm)
+            or.filter(\.emailAddress == searchTerm)
+            or.filter(\.mobilePhone == searchTerm)
+            or.filter(\.officePhone == searchTerm)
+            or.filter(\.accessibilityNeeds == searchTerm)
+            or.filter(\.dietaryNeeds == searchTerm)
             }.all()
     }
 }

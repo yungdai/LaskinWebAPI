@@ -7,11 +7,13 @@ struct UsersController: RouteCollection {
     func boot(router: Router) throws {
         
         let userRoutes = router.grouped("api", "users")
-        userRoutes.post(User.self, use: createHandler)
+		
+		// TODO: Remove the rest of the routes that don't require authentication, will have to go through each one and decide which ones required to be logged in for using a token
+//        userRoutes.post(User.self, use: createHandler)
         userRoutes.get(use: getAllHandler)
         userRoutes.get(User.Public.parameter, use: getHandler)
-        userRoutes.put(User.parameter, use: updateHandler)
-        userRoutes.delete(User.parameter, use: deleteHandler)
+//        userRoutes.put(User.parameter, use: updateHandler)
+//        userRoutes.delete(User.parameter, use: deleteHandler)
         userRoutes.get("search", use: searchHandler)
         userRoutes.get("first", use: getFirstHandler)
         userRoutes.get("sort", use: sortHandler)
@@ -19,9 +21,22 @@ struct UsersController: RouteCollection {
         userRoutes.get(User.parameter, "matchMakingData", use: getMatchMakingDataHandler)
         
         // Create the middleware for authentication
+		// instantiate a basical auth middleware that uses BCryptDigest to verify passsords.
         let basicAuthMiddleWear = User.basicAuthMiddleware(using: BCryptDigest())
-        let basicAuthGroup = userRoutes.grouped(basicAuthMiddleWear)
-        basicAuthGroup.post("login", use: loginHandler)
+		
+		// create an instance of guard middleware that ensures that requests contain valid authorisation
+		let guardAuthMiddleware = User.guardAuthMiddleware()
+		
+		// create a middleware group which uses uses basic and guardAuth Middleware.
+		let protected = userRoutes.grouped(basicAuthMiddleWear, guardAuthMiddleware)
+		
+		// used to log in
+		protected.post("login", use: loginHandler)
+		
+		// authentication required for the following routes
+		protected.post(User.self, use: createHandler)
+		protected.put(User.parameter, use: updateHandler)
+		protected.delete(User.parameter, use: deleteHandler)
     }
     
     // CREATE
@@ -86,13 +101,17 @@ struct UsersController: RouteCollection {
         }
         
         // used the group(.or) the group query different properties in User
-        return try User.query(on: request).group(.or) { or in
+		
+		do {
+			
+		}
+        return User.query(on: request).group(.or) { or in
             
-            try or.filter(\.firstName == searchTerm)
-            try or.filter(\.lastName == searchTerm)
-            try or.filter(\.userType == searchTerm)
-            try or.filter(\.privileges == searchTerm)
-            try or.filter(\.userName == searchTerm)
+            or.filter(\.firstName == searchTerm)
+            or.filter(\.lastName == searchTerm)
+            or.filter(\.userType == searchTerm)
+            or.filter(\.privileges == searchTerm)
+            or.filter(\.userName == searchTerm)
         }.all()
     }
     
@@ -115,7 +134,7 @@ struct UsersController: RouteCollection {
     // see all users sorted ascending by last name
     func sortHandler(_ request: Request) throws -> Future<[User]> {
         
-        return try User.query(on: request).sort(\.lastName, .ascending).all()
+        return User.query(on: request).sort(\.lastName, .ascending).all()
     }
  
     // GET UserDetails for User
@@ -138,10 +157,15 @@ struct UsersController: RouteCollection {
     
     // LOGIN Authentication
     func loginHandler(_ request: Request) throws -> Future<Token> {
-        
-        let user = try request.requireAuthenticated(User.self)
-        let token = try Token.generate(for: user)
-        return token.save(on: request)
-    }
+		
+		// get the authenticated user from teh request, then protect the route with the HTTP basic authenitication middleware.  This will save the user's identity in the requests's authentication cache, allowing you to retireve the user object later
+		let user = try request.requireAuthenticated(User.self)
+		
+		// create a tokent for the user
+		let token = try Token.generate(for: user)
+		
+		// save and return the token
+		return token.save(on: request)
+	}
 }
 

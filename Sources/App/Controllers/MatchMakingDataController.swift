@@ -15,7 +15,8 @@ struct MatchMakingDataController: RouteCollection {
         // Added to allow only authenticated users for these routes
         // use tokenAuthMiddleWare() to make sure that you're authenticated to use these routes
         let tokenAuthMiddleWare = User.tokenAuthMiddleware()
-        let tokenAuthGroup = matchMakingDataRoutes.grouped(tokenAuthMiddleWare)
+		let guardAuthMiddleware = User.guardAuthMiddleware()
+        let tokenAuthGroup = matchMakingDataRoutes.grouped(tokenAuthMiddleWare, guardAuthMiddleware)
         
         // moving the routes for create, update, and delete down to this group
         // ensure that ONLY authenticated users can be allowed to use the routes
@@ -92,13 +93,13 @@ struct MatchMakingDataController: RouteCollection {
         }
         
         
-        return try MatchMakingData.query(on: request).group(.or) { or in
+        return MatchMakingData.query(on: request).group(.or) { or in
             
-            try or.filter(\.school == searchTerm)
-            try or.filter(\.city == searchTerm)
-            try or.filter(\.province == searchTerm)
-            try or.filter(\.interpreterType == searchTerm)
-            try or.filter(\.additionalNotes == searchTerm)
+            or.filter(\.school == searchTerm)
+            or.filter(\.city == searchTerm)
+            or.filter(\.province == searchTerm)
+            or.filter(\.interpreterType == searchTerm)
+            or.filter(\.additionalNotes == searchTerm)
             }.all()
     }
 }

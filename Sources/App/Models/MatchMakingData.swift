@@ -54,12 +54,13 @@ extension MatchMakingData: Migration {
         
         // create table for UserDetails in the database
         return Database.create(self, on: connection) { builder in
-            
+			
             // add all the fields to the database for MatchMakingData.
             try addProperties(to: builder)
             
             // add reference between the userID propery on MatchMakingData and the id properly on the User
-            try builder.addReference(from: \.userID, to: \User.id)
+			
+			builder.reference(from: \.userID, to: \User.id)
         }
     }
 }
