@@ -77,8 +77,7 @@ final class UserTests: XCTestCase {
         // save the test user
         let savedUser = try user.save(on: conn).wait()
         
-        
-        _ = try User(firstName: "Tim", lastName: "Moseley", userType: .administrator, privileges: .admin, password: "password", userName: "Tim")
+        _ = try User(firstName: "Tim", lastName: "Moseley", userType: .administrator, privileges: .admin, password: "password", userName: "Tim").save(on: conn).wait()
         
         // create a responsder type that responds to requests
         let responder = try app.make(Responder.self)
@@ -92,16 +91,15 @@ final class UserTests: XCTestCase {
         
         // Decode the reponse data into an array of users
         let data = response.http.body.data
-        let users = try JSONDecoder().decode([User].self, from: data!)
         
+        
+        let users = try JSONDecoder().decode([User.Public].self, from: data!)
         // Ensure there are the corect number of users
-        XCTAssertEqual(users.count, 2)
-        XCTAssertEqual(users[0].firstName, expectedFirstName)
-        XCTAssertEqual(users[0].lastName, expectedLastName)
-        XCTAssertEqual(users[0].userType, expectedUserType.rawValue)
-        XCTAssertEqual(users[0].privileges, expectedPriviledges.rawValue)
-        XCTAssertEqual(users[0].userName, expectedUsername)
-        XCTAssertEqual(users[0].id, savedUser.id)
+        XCTAssertEqual(users.count, 3)
+        XCTAssertEqual(users[1].firstName, expectedFirstName)
+        XCTAssertEqual(users[1].lastName, expectedLastName)
+        XCTAssertEqual(users[1].userName, expectedUsername)
+        XCTAssertEqual(users[1].id, savedUser.id)
         
         // close the connection to the database once the test has finished
         conn.close()
