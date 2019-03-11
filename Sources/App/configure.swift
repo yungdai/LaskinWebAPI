@@ -38,13 +38,31 @@ public func configure(
     
     // fetch environement variables set by Vapor Cloud.  If it's nil return the coalescing values
     let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
-    let username = Environment.get("DATABASE_USER") ?? "admin"
-    let databaseName = Environment.get("DATABASE_DB") ?? "vapor"
-    let password = Environment.get("DATABASE_PASSWORD") ?? "laskinAdmin"
+
+    
+    
+   
+    // allow for testing the database
+    let databaseName: String
+    let databasePort: Int
+    let username: String
+    let password: String
+    // if we are running the testing environment set the database and port to the testing database name and port values
+    if env == .testing {
+        databaseName = "vapor-test"
+        databasePort = 5433
+        username = "vapor"
+        password = "password"
+    } else {
+        databaseName = Environment.get("DATABASE_DB") ?? "vapor"
+        databasePort = 5432
+        username = Environment.get("DATABASE_USER") ?? "admin"
+        password = Environment.get("DATABASE_PASSWORD") ?? "laskinAdmin"
+    }
 
     // user properties to create the config
     let databaseConfig = PostgreSQLDatabaseConfig(hostname: hostname,
-                                                  port: 5432,
+                                                  port: databasePort,
                                                   username: username,
                                                   database: databaseName,
                                                   password: password)
@@ -71,7 +89,7 @@ public func configure(
     // create a CommandConfig with the default configuration
     var commandConfig = CommandConfig.default()
     // Add the revert command with the identifier revert.  This is the string you use to to invoke the command
-    commandConfig.use(RevertCommand.self, as: "revert")
+    commandConfig.useFluentCommands()
     // register the commandConfig as a service
     services.register(commandConfig)
     

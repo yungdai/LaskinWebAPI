@@ -72,7 +72,10 @@ struct UserWebsiteController: RouteCollection {
             // To add authentication create hasher
             // encrypt the user password with the hasher
             let password = try request.make(BCryptDigest.self).hash(data.password)
-            let user = User(firstName: data.firstName, lastName: data.lastName, userType: data.userType, privileges: data.privileges, password: password, userName: data.userName)
+            
+            let userType = UserType(rawValue: data.userType) ?? .none
+            let appPriviledges = AppPrivileges(rawValue: data.privileges) ?? .none
+            let user = User(firstName: data.firstName, lastName: data.lastName, userType: userType, privileges:  appPriviledges, password: password, userName: data.userName)
             
             // save the user and check the ID to make sure it's saved properly
             return user.save(on: request).map(to: Response.self) { user in
@@ -109,8 +112,8 @@ struct UserWebsiteController: RouteCollection {
             
             user.firstName = data.firstName
             user.lastName = data.lastName
-            user.userType = data.userType
-            user.privileges = data.privileges
+            user.userType = UserType(rawValue: data.userType)?.rawValue ?? UserType.none.rawValue
+            user.privileges = AppPrivileges(rawValue: data.privileges)?.rawValue ?? AppPrivileges.none.rawValue
             
             var passwordValidated: Bool = true
             
@@ -128,7 +131,7 @@ struct UserWebsiteController: RouteCollection {
             }
      
             if data.privileges == "" {
-                user.privileges = "none"
+                user.privileges = AppPrivileges.none.rawValue
             }
             
             return user.save(on: request).map(to: Response.self) { user in

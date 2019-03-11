@@ -15,7 +15,6 @@ let package = Package(
         
         // This package is for authentication
         .package(url: "https://github.com/vapor/auth.git", from: "2.0.0")
-
     ],
     targets: [
         .target(name: "App", dependencies: ["FluentPostgreSQL", "Vapor", "Leaf", "Authentication"]),

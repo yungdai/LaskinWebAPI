@@ -3,34 +3,23 @@ import Vapor
 import FluentPostgreSQL
 import Authentication
 
-public enum UserType: String, Codable {
-    
-    case none = "none"
-    case administrator = "administrator"
-    case coach = "coach"
-    case contactPerson = "contact person"
-    case judge = "judge"
-    case mooter = "mooter"
-    case researcher = "researcher"
-}
-
 final class User: Codable {
     
     var id: UUID?
     var firstName: String
     var lastName: String
-    var userType: String
+    var userType: UserType.RawValue
     var userName: String
-    var privileges: String
+    var privileges: AppPrivileges.RawValue
     var password: String
 
     
-    init(firstName: String = "", lastName: String = "", userType: String = "none", privileges: String = "none", password: String, userName: String) {
+    init(firstName: String = "", lastName: String = "", userType: UserType = .none, privileges: AppPrivileges = .none, password: String, userName: String) {
         
         self.firstName = firstName
         self.lastName = lastName
-        self.userType = userType
-        self.privileges = privileges
+        self.userType = userType.rawValue
+        self.privileges = privileges.rawValue
         self.password = password
         self.userName = userName
     }
@@ -136,7 +125,7 @@ struct AdminUser: Migration {
 		}
 		
 		// create a new user with the username "admin", you can change the password immediately for the user afterwards
-		let user = User(firstName: "admin", lastName: "user", userType: "administrator", privileges: "admin", password: hashedPassword, userName: "admin")
+        let user = User(firstName: "admin", lastName: "user", userType: .administrator, privileges: .admin, password: hashedPassword, userName: "admin")
 		
 		//  save the user and transform to the result to void
 		return user.save(on: connection).transform(to: ())
@@ -146,6 +135,5 @@ struct AdminUser: Migration {
 	static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
 		
 		return .done(on: connection)
-	}
-	
+	}	
 }

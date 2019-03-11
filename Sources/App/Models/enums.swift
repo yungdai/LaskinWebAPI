@@ -94,6 +94,7 @@ extension Province: Equatable {
 	
 	static func ==(lhs: Province, rhs: Province) -> Bool {
 		
+        
 		return (lhs == rhs) ? true : false
 	}
 }
@@ -146,4 +147,65 @@ public enum SchoolName: String, StringRepresentableEnum, Codable {
 		
 		return schools
 	}
+}
+
+public enum AppPrivileges: String, StringRepresentableEnum, Codable {
+    case admin = "admin"
+    case user = "user"
+    case none = "none"
+    
+    public init() {
+        self = .none
+    }
+}
+
+extension AppPrivileges: Equatable {
+    
+    static public func ==(lhs: AppPrivileges, rhs: AppPrivileges) -> Bool {
+        
+        switch (lhs, rhs) {
+        case (.admin, .admin):
+            return true
+        case (.user, .user):
+            return true
+        case (.none, .none):
+            return true
+        default:
+            return (lhs == rhs) ? true : false
+        }
+    }
+}
+
+public enum UserType: String, Codable {
+    
+    case none = "none"
+    case administrator = "administrator"
+    case coach = "coach"
+    case contactPerson = "contact person"
+    case judge = "judge"
+    case mooter = "mooter"
+    case researcher = "researcher"
+}
+
+extension UserType: Equatable {
+    
+    static public func ==(lhs: UserType, rhs: UserType) -> Bool {
+        
+        switch(lhs, rhs) {
+        case (.none, .none):
+            return true
+        case (.administrator, .administrator):
+            return true
+        case (.coach, .coach):
+            return true
+        case (.judge, .judge):
+            return true
+        case (.mooter, .mooter):
+            return true
+        case (.researcher, .researcher):
+            return true
+        default:
+            return false
+        }
+    }
 }
