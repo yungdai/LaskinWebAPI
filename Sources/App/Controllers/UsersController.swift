@@ -23,12 +23,9 @@ struct UsersController: RouteCollection {
         // Create the middleware for authentication
 		// instantiate a basical auth middleware that uses BCryptDigest to verify passsords.
         let basicAuthMiddleWear = User.basicAuthMiddleware(using: BCryptDigest())
-		
-		// create an instance of guard middleware that ensures that requests contain valid authorisation
-		let guardAuthMiddleware = User.guardAuthMiddleware()
-		
+
 		// create a middleware group which uses uses basic and guardAuth Middleware.
-		let protected = userRoutes.grouped(basicAuthMiddleWear, guardAuthMiddleware)
+		let protected = userRoutes.grouped(basicAuthMiddleWear)
 		
 		// used to log in
 		protected.post("login", use: loginHandler)
@@ -40,29 +37,26 @@ struct UsersController: RouteCollection {
     }
     
     // CREATE
-    func createHandler(_ request: Request, user: User) throws -> Future<User> {
-        
-        return try request.content.decode(User.self).flatMap(to: User.self) { user in
+    func createHandler(_ request: Request, user: User) throws -> Future<User.Public> {
 
-            // To add authentication create hasher
-            // encrypt the user password with the hasher
-            user.password = try request.make(BCryptDigest.self).hash(user.password)
-            
-            return user.save(on: request)
-        }
+        // To add authentication create hasher
+        // encrypt the user password with the hasher
+        user.password = try BCrypt.hash(user.password)
+        
+        return user.save(on: request).convertToPublic()
     }
     
     // GET ALL
     // Changed for authentication
     func getAllHandler(_ request: Request) throws -> Future<[User.Public]> {
-        return User.Public.query(on: request).all()
+        
+        // instead of converting the User models to User.Public we can decode the data return from the querey into User.Public
+        return User.query(on: request).decode(data: User.Public.self).all()
     }
-    
 
-    
     // GET by api/users/#id
     func getHandler(_ request: Request) throws -> Future<User.Public> {
-        return try request.parameters.next(User.Public.self)
+        return try request.parameters.next(User.self).convertToPublic()
     }
     
     // UPDATE

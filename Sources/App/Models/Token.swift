@@ -1,7 +1,6 @@
-import Vapor
-import Fluent
-import FluentPostgreSQL
 import Foundation
+import Vapor
+import FluentPostgreSQL
 import Authentication
 
 // For authentication
@@ -25,14 +24,13 @@ extension Token: Migration {
 	
 	static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
 		
-		return Database.create(self, on: connection){ builder in
+		return Database.create(self, on: connection) { builder in
 			
 			try addProperties(to: builder)
 			builder.reference(from: \.userID, to: \User.id)
 		}
 	}
 }
-
 
 extension Token {
     

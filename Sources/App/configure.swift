@@ -39,9 +39,6 @@ public func configure(
     // fetch environement variables set by Vapor Cloud.  If it's nil return the coalescing values
     let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
 
-    
-    
-   
     // allow for testing the database
     let databaseName: String
     let databasePort: Int

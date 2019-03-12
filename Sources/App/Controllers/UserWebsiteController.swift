@@ -32,7 +32,6 @@ struct UserWebsiteController: RouteCollection {
         proctectedRoutes.get("create-user", use: createUserHandler)
         proctectedRoutes.post("create-user", use: createUserPostHandler)
         
-        
         // EDIT USER and POST DATA
         proctectedRoutes.get("users", User.parameter, "edit", use: editUserHandler)
         proctectedRoutes.post("users", User.parameter, "edit", use: editUserPostHandler)

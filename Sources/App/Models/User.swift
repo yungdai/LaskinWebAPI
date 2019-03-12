@@ -50,18 +50,34 @@ final class User: Codable {
         var firstName: String
         var lastName: String
         
-        init(userName: String, firstName: String, lastName: String) {
+        init(id: UUID?, userName: String, firstName: String, lastName: String) {
             
             self.firstName = firstName
             self.lastName = lastName
             self.userName = userName
+            self.id = id
         }
     }
 }
 
 extension User: PostgreSQLUUIDModel {}
 extension User: Content {}
-extension User: Migration {}
+extension User: Migration {
+    
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        
+        // create the User Table
+        return Database.create(self, on: connection) { builder in
+            
+            // Add all the columns to the User tabkle using user properties
+            try addProperties(to: builder)
+            
+            // add a unique index to username on the user.  This ensures that there are no duplicate usernames and it would result in an error.
+            builder.unique(on: \.userName)
+        }
+    }
+}
+
 extension User: Parameter {}
 
 // extend the PostgreSQLUUIDModel to the internet class so fluent can use it
@@ -84,6 +100,24 @@ extension User {
     
     var matchMakingData: Children<User, MatchMakingData> {
         return children(\.userID)
+    }
+    
+    /// Used to create a public version of the current object
+    func convertToPublic() -> User.Public {
+        return User.Public(id: id, userName: userName, firstName: firstName, lastName: lastName)
+    }
+}
+
+
+extension Future where T: User {
+    
+    /// Alows to call ConvertToPublic() on Future<User>
+    func convertToPublic() -> Future<User.Public> {
+        
+        return self.map(to: User.Public.self) { user in
+            
+            return user.convertToPublic()
+        }
     }
 }
 
